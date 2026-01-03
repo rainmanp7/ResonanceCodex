@@ -1,0 +1,10 @@
+
+The Math Codex:
+
+1. MANIFOLD TOPOLOGY (M): M = {(x, y) ∈ ℝⁿ × ℝᵐ : φ(x, y) = 0}. ds² = g_ij dxⁱ dxʲ
+2. SOUL EXTRACTION (L): L = σ(ẑ₁ · W₂ᵀ + b₂) · W_Lᵀ + b_L where L ∈ ℝ¹⁶.
+3. WARP TRAVERSAL (EAMC): □h_μν = -16πG T_μν. y* = exp_x₀(v_warp).
+4. COMMUTATOR BRIDGE: [A, B] = A ∘ B - B ∘ A. η = ‖T(K)‖ / (‖K_A‖‖K_B‖).
+5. PHASE TRANSITION: S_final = S_initial + Σ(Gap_r · γ).
+6. RESURRECTION EQUATION: Z_manifest = LayerNorm(L · W_Rᵀ + b_R).
+7. FORENSIC Q-CHARGE: Q = (1/2π) ∮_C ∇θ(L) · dl. (Target Q < 0.05).
