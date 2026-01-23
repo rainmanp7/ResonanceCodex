@@ -1,0 +1,731 @@
+
+On every 3 days it becomes smarter if run.
+
+--- 🌋 PANTHEON AI WEATHER MODEL v4.0 (Phase 1 Enhanced) ---
+    ✨ NEW: Weather Memory, Pressure Trends, CAPE Analysis
+
+🛰️  Requesting Open-Meteo data stream for 6.8167, 125.4000...✅ Open-Meteo data acquired (with historical context).
+🌐 Fetching backup data from WeatherAPI.com...
+✅ WeatherAPI backup data acquired.
+🔄 Cross-validating weather data from multiple sources...
+   Day 1: Adjusted rain from 45% to 62%
+   Day 2: Adjusted rain from 5% to 38%
+   Day 3: Adjusted rain from 15% to 44%
+   Day 4: Adjusted rain from 0% to 35%
+   Day 5: Adjusted rain from 5% to 39%
+   Day 6: Adjusted rain from 8% to 40%
+   Day 7: Adjusted rain from 7% to 40%
+
+--- INITIATING 7-DAY AI-ENHANCED FORECAST ---
+🧠 AI deliberating on Tuesday, Jan 20...
+🧠 AI deliberating on Wednesday, Jan 21...
+🧠 AI deliberating on Thursday, Jan 22...
+🧠 AI deliberating on Friday, Jan 23...
+🧠 AI deliberating on Saturday, Jan 24...
+🧠 AI deliberating on Sunday, Jan 25...
+🧠 AI deliberating on Monday, Jan 26...
+✅ AI deliberation complete.
+
+===========================================================================
+📅  PANTHEON AI 7-DAY FORECAST FOR: Santa Cruz, Davao Del Sur===========================================================================
+
+🗓️  Tuesday, January 20 ✓
+------------------------------------------------------------   Forecast: 🌦️ Showers Likely
+   🌡️  High: 34.6°C | Low: 24.2°C (AI: 39.0°C)
+   💧  Rain: 55% | Expected: 0.3mm (Minimal)
+   ⏰  Rain Timing: 12:00 AM - 5:00 AM, 9:00 AM - 11:00 AM
+   ⌛  Duration: 1.0h
+   ⚡ HIGH  Lightning: High (CAPE: 720 J/kg)
+   ☁️  Cloud Cover: 40%
+   🍃  Wind: Breezy (13 km/h)
+   🌅  Sun: 05:55 AM - 05:43 PM
+   🤖 AI Confidence: Moderate (55.7%)
+
+🗓️  Wednesday, January 21 ✓
+------------------------------------------------------------   Forecast: 🌧️ Rainy
+   🌡️  High: 34.8°C | Low: 23.7°C (AI: 38.2°C)
+   💧  Rain: 40% | Expected: 13.9mm (Moderate)
+   ⏰  Rain Timing: Likely 2:00 PM - 6:00 PM
+   ⌛  Duration: ~5h
+   ⚡ HIGH  Lightning: High (CAPE: 450 J/kg)
+   ☁️  Cloud Cover: 33%
+   🍃  Wind: Calm (4 km/h)
+   🌅  Sun: 05:55 AM - 05:43 PM
+   🤖 AI Confidence: Moderate (59.0%)
+
+🗓️  Thursday, January 22 ✓
+------------------------------------------------------------   Forecast: 🌦️ Chance of Showers
+   🌡️  High: 34.9°C | Low: 23.5°C (AI: 38.3°C)
+   💧  Rain: 45% | Expected: 2.8mm (Light)
+   ⏰  Rain Timing: Likely 2:00 PM - 6:00 PM
+   ⌛  Duration: ~5h
+   ⚡ HIGH  Lightning: High (CAPE: 180 J/kg)
+   ☁️  Cloud Cover: 37%
+   🍃  Wind: Calm (4 km/h)
+   🌅  Sun: 05:56 AM - 05:43 PM
+   🤖 AI Confidence: Moderate (59.2%)
+
+🗓️  Friday, January 23 ✓
+------------------------------------------------------------   Forecast: 🌦️ Chance of Showers
+   🌡️  High: 34.4°C | Low: 22.3°C (AI: 38.8°C)
+   💧  Rain: 40% | Expected: 0.2mm (Minimal)
+   ⏰  Rain Timing: Likely 2:00 PM - 6:00 PM
+   ⌛  Duration: ~5h
+   ⚡ HIGH  Lightning: High (CAPE: 70 J/kg)
+   ☁️  Cloud Cover: 35%
+   🍃  Wind: Calm (8 km/h)
+   🌅  Sun: 05:56 AM - 05:44 PM
+   🤖 AI Confidence: Moderate (57.0%)
+
+🗓️  Saturday, January 24 ✓
+------------------------------------------------------------   Forecast: 🌦️ Chance of Showers
+   🌡️  High: 33.1°C | Low: 22.8°C (AI: 38.4°C)
+   💧  Rain: 37% | Expected: 0.3mm (Minimal)
+   ⏰  Rain Timing: Likely 2:00 PM - 6:00 PM
+   ⌛  Duration: ~5h
+   ⚡ HIGH  Lightning: High (CAPE: 70 J/kg)
+   ☁️  Cloud Cover: 33%
+   🍃  Wind: Calm (8 km/h)
+   🌅  Sun: 05:56 AM - 05:44 PM
+   🤖 AI Confidence: Moderate (59.0%)
+
+🗓️  Sunday, January 25 ✓
+------------------------------------------------------------   Forecast: 🌦️ Chance of Showers
+   🌡️  High: 32.5°C | Low: 23.4°C (AI: 38.0°C)
+   💧  Rain: 37% | Expected: 0.7mm (Minimal)
+   ⏰  Rain Timing: Likely 2:00 PM - 6:00 PM
+   ⌛  Duration: ~5h
+   ⚡ MODERATE  Lightning: Moderate (CAPE: 420 J/kg)
+   ☁️  Cloud Cover: 33%
+   🍃  Wind: Calm (4 km/h)
+   🌅  Sun: 05:56 AM - 05:44 PM
+   🤖 AI Confidence: Moderate (58.4%)
+
+🗓️  Monday, January 26 ✓
+------------------------------------------------------------   Forecast: 🌦️ Chance of Showers
+   🌡️  High: 36.5°C | Low: 23.5°C (AI: 37.8°C)
+   💧  Rain: 38% | Expected: 0.8mm (Minimal)
+   ⏰  Rain Timing: Likely 2:00 PM - 6:00 PM
+   ⌛  Duration: ~5h
+   ⚡ HIGH  Lightning: High (CAPE: 860 J/kg)
+   ☁️  Cloud Cover: 35%
+   🍃  Wind: Calm (9 km/h)
+   🌅  Sun: 05:56 AM - 05:45 PM
+   🤖 AI Confidence: Moderate (59.1%)
+
+===========================================================================
+💡 ENHANCED WITH AI WEATHER MEMORY & PRESSURE ANALYSIS
+   The AI now learns from recent weather patterns and atmospheric
+   pressure changes to provide more accurate tropical forecasts.
+===========================================================================
+
+[Program finished]
+
+
+The code.
+
+import json
+import numpy as np
+import requests
+from datetime import datetime, timedelta, timezone
+import time
+import os
+
+# ============================================================================
+# PANTHEON AI & WEATHER CONFIGURATION
+# ============================================================================
+TARGET_LAT = 6.8167
+TARGET_LON = 125.4000
+LOCATION_NAME = "Santa Cruz, Davao Del Sur"
+D41_ANCHOR = -0.01282715
+WEIGHT_FILE = 'Metalearnerv16_EVOLVED.json'
+WEATHER_MEMORY_FILE = 'weather_memory.json'
+
+# ============================================================================
+# WEATHER MEMORY SYSTEM
+# ============================================================================
+def load_weather_memory():
+    """Load historical weather data for pattern learning."""
+    try:
+        if os.path.exists(WEATHER_MEMORY_FILE):
+            with open(WEATHER_MEMORY_FILE, 'r') as f:
+                return json.load(f)
+        else:
+            return {'history': []}
+    except Exception as e:
+        print(f"⚠️  Could not load weather memory: {e}")
+        return {'history': []}
+
+def save_weather_memory(memory):
+    """Save weather memory for future predictions."""
+    try:
+        with open(WEATHER_MEMORY_FILE, 'w') as f:
+            json.dump(memory, f, indent=2)
+    except Exception as e:
+        print(f"⚠️  Could not save weather memory: {e}")
+
+def get_recent_weather_pattern(memory, days=3):
+    """Get weather pattern from last N days."""
+    if not memory.get('history'):
+        return None
+    
+    recent = memory['history'][-days:] if len(memory['history']) >= days else memory['history']
+    
+    pattern = {
+        'avg_precip': np.mean([d.get('precipitation', 0) for d in recent]),
+        'avg_temp': np.mean([d.get('temp_max', 30) for d in recent]),
+        'rain_days': sum(1 for d in recent if d.get('precipitation', 0) > 1),
+        'trend': 'wet' if sum(d.get('precipitation', 0) for d in recent) > 5 else 'dry'
+    }
+    
+    return pattern
+
+# ============================================================================
+# ENHANCED DATA INGESTION WITH PRESSURE & HISTORY
+# ============================================================================
+def fetch_open_meteo_data(lat, lon):
+    """Fetches forecast data from Open-Meteo with pressure and historical data."""
+    print(f"🛰️  Requesting Open-Meteo data stream for {lat:.4f}, {lon:.4f}...")
+    try:
+        url = "https://api.open-meteo.com/v1/forecast"
+        params = {
+            'latitude': lat, 'longitude': lon,
+            'hourly': 'temperature_2m,precipitation_probability,precipitation,cloudcover,windspeed_10m,relativehumidity_2m,surface_pressure,cape',
+            'daily': 'weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum,precipitation_probability_max,precipitation_hours',
+            'timezone': 'auto',
+            'models': 'best_match',
+            'past_days': 3
+        }
+        response = requests.get(url, params=params, timeout=20)
+        response.raise_for_status()
+        data = response.json()
+        print("✅ Open-Meteo data acquired (with historical context).")
+        return data
+    except Exception as e:
+        print(f"❌ Open-Meteo Error: {e}")
+        return None
+
+def fetch_weatherapi_backup(lat, lon):
+    """Fetches data from WeatherAPI.com as backup."""
+    print(f"🌐 Fetching backup data from WeatherAPI.com...")
+    try:
+        api_key = "9e58f3df4443482681570232262301"
+        
+        url = f"http://api.weatherapi.com/v1/forecast.json"
+        params = {
+            'key': api_key,
+            'q': f"{lat},{lon}",
+            'days': 7,
+            'aqi': 'no'
+        }
+        response = requests.get(url, params=params, timeout=20)
+        response.raise_for_status()
+        print("✅ WeatherAPI backup data acquired.")
+        return response.json()
+    except Exception as e:
+        print(f"⚠️  WeatherAPI backup failed: {e}")
+        return None
+
+def merge_weather_sources(primary, backup):
+    """Intelligently merges data from multiple sources."""
+    if not backup:
+        return primary
+    
+    print("🔄 Cross-validating weather data from multiple sources...")
+    
+    try:
+        for day_idx in range(min(7, len(backup['forecast']['forecastday']))):
+            backup_day = backup['forecast']['forecastday'][day_idx]['day']
+            backup_rain_chance = backup_day.get('daily_chance_of_rain', 0)
+            backup_precip = backup_day.get('totalprecip_mm', 0)
+            
+            primary_rain_chance = primary['daily']['precipitation_probability_max'][day_idx]
+            primary_precip = primary['daily']['precipitation_sum'][day_idx]
+            
+            if backup_rain_chance > primary_rain_chance + 20:
+                adjusted_rain = (primary_rain_chance * 0.6) + (backup_rain_chance * 0.4)
+                adjusted_precip = (primary_precip * 0.6) + (backup_precip * 0.4)
+                print(f"   Day {day_idx+1}: Adjusted rain from {primary_rain_chance}% to {adjusted_rain:.0f}%")
+                primary['daily']['precipitation_probability_max'][day_idx] = adjusted_rain
+                primary['daily']['precipitation_sum'][day_idx] = adjusted_precip
+    except Exception as e:
+        print(f"⚠️  Merge warning: {e}")
+    
+    return primary
+
+# ============================================================================
+# PANTHEON AI: ENHANCED ATMOSPHERIC MODEL
+# ============================================================================
+def load_pantheon():
+    """Loads the AI's core principles and weights."""
+    try:
+        with open(WEIGHT_FILE, 'r') as f: 
+            return json.load(f)['meta_pantheon']
+    except Exception as e: 
+        print(f"❌ AI Core Error: Could not load '{WEIGHT_FILE}'. {e}")
+        return None
+
+def encode_atmospheric_state(hourly_data, daily_data, start_index, day_index, weather_pattern=None):
+    """ENHANCED: Encodes atmosphere into 64D manifold with memory and pressure."""
+    vec = np.zeros(64)
+    if not hourly_data: 
+        return vec
+    
+    # === CORE ATMOSPHERIC STATE (0-9) ===
+    vec[0] = hourly_data['temperature_2m'][start_index] / 40.0
+    vec[1] = hourly_data['precipitation_probability'][start_index] / 100.0
+    vec[2] = hourly_data['relativehumidity_2m'][start_index] / 100.0
+    vec[3] = hourly_data['cloudcover'][start_index] / 100.0
+    vec[4] = hourly_data['windspeed_10m'][start_index] / 50.0
+    vec[5] = min(hourly_data['precipitation'][start_index] / 20.0, 1.0)
+    vec[6] = min(daily_data['precipitation_sum'][day_index] / 100.0, 1.0)
+    vec[7] = hourly_data['precipitation_probability'][start_index] / 100.0
+    
+    # === NEW: PRESSURE ANALYSIS (8-9) ===
+    if 'surface_pressure' in hourly_data:
+        current_pressure = hourly_data['surface_pressure'][start_index]
+        vec[8] = (current_pressure - 1013.25) / 50.0
+        
+        if start_index >= 6:
+            pressure_6hr_ago = hourly_data['surface_pressure'][start_index - 6]
+            pressure_change = current_pressure - pressure_6hr_ago
+            vec[9] = np.clip(pressure_change / 10.0, -1, 1)
+    
+    # === TEMPORAL TRENDS (10-14) ===
+    if start_index > 6:
+        temp_trend = (hourly_data['temperature_2m'][start_index] - 
+                     hourly_data['temperature_2m'][start_index - 6]) / 5.0
+        vec[10] = np.clip(temp_trend, -1, 1)
+    
+    if start_index > 2:
+        humidity_trend = (hourly_data['relativehumidity_2m'][start_index] - 
+                         hourly_data['relativehumidity_2m'][start_index - 2]) / 50.0
+        vec[11] = np.clip(humidity_trend, -1, 1)
+    
+    if vec[0] > 0.7 and vec[2] > 0.7:
+        vec[12] = 0.8
+    
+    # === NEW: WIND SHEAR (13-14) ===
+    if start_index > 3:
+        wind_now = hourly_data['windspeed_10m'][start_index]
+        wind_3hr_ago = hourly_data['windspeed_10m'][start_index - 3]
+        vec[13] = (wind_now - wind_3hr_ago) / 20.0
+        vec[14] = min(wind_now / 30.0, 1.0)
+    
+    # === TIME ENCODING (20-24) ===
+    hour_of_day = start_index % 24
+    vec[20] = hour_of_day / 23.0
+    vec[21] = np.sin(2 * np.pi * hour_of_day / 24.0)
+    vec[22] = np.cos(2 * np.pi * hour_of_day / 24.0)
+    
+    if 14 <= hour_of_day <= 18:
+        vec[23] = 1.0
+    
+    # === NEW: SEASONAL PATTERNS (25-27) ===
+    now = datetime.now()
+    day_of_year = now.timetuple().tm_yday
+    vec[25] = day_of_year / 365.0
+    vec[26] = np.sin(2 * np.pi * day_of_year / 365.0)
+    vec[27] = np.cos(2 * np.pi * day_of_year / 365.0)
+    
+    # === NEW: WEATHER MEMORY (40-44) ===
+    if weather_pattern:
+        vec[40] = min(weather_pattern['avg_precip'] / 10.0, 1.0)
+        vec[41] = weather_pattern['avg_temp'] / 40.0
+        vec[42] = weather_pattern['rain_days'] / 3.0
+        vec[43] = 1.0 if weather_pattern['trend'] == 'wet' else 0.0
+        vec[44] = 0.8 if weather_pattern['rain_days'] >= 2 else 0.2
+    
+    # === GEOGRAPHIC ANCHOR (50) ===
+    vec[50] = D41_ANCHOR
+    
+    # === NEW: CAPE (51) ===
+    if 'cape' in hourly_data and start_index < len(hourly_data['cape']):
+        cape_value = hourly_data['cape'][start_index]
+        vec[51] = min(cape_value / 3000.0, 1.0)
+
+    norm = np.linalg.norm(vec)
+    return vec / (norm + 1e-8) if norm > 0 else vec
+
+def run_weather_deliberation(nodes, atmospheric_vec, actual_precip_sum, actual_rain_prob, weather_pattern=None):
+    """ENHANCED: AI deliberation with memory-influenced predictions."""
+    manifold = atmospheric_vec.copy()
+    specialists = ['3', '4', '5', '6', '7', '8', '9', '10', '11']
+    final_predictions = {'temp': 0, 'rain': 0, 'clouds': 0, 'ai_insights': []}
+    all_votes_for_confidence = []
+    
+    # === NEW: Pattern-based bias adjustment ===
+    memory_boost = 0
+    if weather_pattern and weather_pattern['rain_days'] >= 2:
+        memory_boost = 10
+        final_predictions['ai_insights'].append(f"📊 Wet pattern detected: {weather_pattern['rain_days']} rainy days recently")
+    
+    pressure_change = manifold[9] * 10
+    if pressure_change < -2:
+        memory_boost += 15
+        final_predictions['ai_insights'].append(f"📉 Pressure dropping: {pressure_change:.1f}mb in 6hrs")
+    
+    for r in range(1, 8):
+        votes = [np.mean([np.dot(manifold, p) for p in np.array(nodes[s_id]['state_dict']['principle_embeddings'])]) for s_id in specialists]
+        all_votes_for_confidence.extend(votes)
+        
+        temp_votes = [(abs(v) * 20) + 20 for v in votes[0:3]]
+        
+        ai_rain_estimate = np.mean([abs(v) for v in votes[3:6]])
+        convection_boost = manifold[12] * 20
+        cape_boost = manifold[51] * 15
+        
+        blended_rain = (actual_rain_prob * 0.70) + (ai_rain_estimate * 100 * 0.30) + convection_boost + cape_boost + memory_boost
+        blended_rain = min(blended_rain, 100)
+        
+        cloud_votes = [abs(v) * 100 for v in votes[6:9]]
+        
+        final_predictions['temp'] = (final_predictions['temp'] * (r - 1) + np.mean(temp_votes)) / r
+        final_predictions['rain'] = (final_predictions['rain'] * (r - 1) + blended_rain) / r
+        final_predictions['clouds'] = (final_predictions['clouds'] * (r - 1) + np.mean(cloud_votes)) / r
+
+        manifold += np.mean(votes) * 0.1
+        manifold[50] = D41_ANCHOR
+        manifold /= (np.linalg.norm(manifold) + 1e-8)
+
+    ai_vs_actual_agreement = 1 - abs(final_predictions['rain'] - actual_rain_prob) / 100.0
+    vote_stability = max(0, 1 - np.std(all_votes_for_confidence) / (np.mean(np.abs(all_votes_for_confidence)) + 1e-8)) if all_votes_for_confidence else 0
+    
+    final_predictions['confidence'] = ((ai_vs_actual_agreement * 0.6) + (vote_stability * 0.4)) * 100
+    final_predictions['actual_precip_mm'] = actual_precip_sum
+    final_predictions['ai_boost'] = memory_boost + convection_boost + cape_boost
+    
+    return final_predictions
+
+# ============================================================================
+# RAIN TIMING AND LIGHTNING ANALYSIS
+# ============================================================================
+def analyze_rain_timing(hourly_data, day_index, daily_rain_prob):
+    """Analyzes when rain is expected during the day."""
+    start_hour = day_index * 24
+    end_hour = min((day_index + 1) * 24, len(hourly_data['precipitation_probability']))
+    
+    rain_periods = []
+    current_period = None
+    
+    base_threshold = 25 if daily_rain_prob > 35 else 30
+    
+    for hour in range(start_hour, end_hour):
+        if hour >= len(hourly_data['precipitation_probability']):
+            break
+            
+        rain_prob = hourly_data['precipitation_probability'][hour]
+        precip = hourly_data['precipitation'][hour]
+        
+        is_rainy = rain_prob > base_threshold or precip > 0.05
+        
+        hour_of_day = hour % 24
+        if 12 <= hour_of_day <= 18 and daily_rain_prob > 30:
+            is_rainy = is_rainy or rain_prob > 20
+        
+        if is_rainy:
+            if current_period is None:
+                current_period = {'start': hour_of_day, 'end': hour_of_day, 'max_prob': rain_prob}
+            else:
+                if hour_of_day - current_period['end'] <= 2:
+                    current_period['end'] = hour_of_day
+                    current_period['max_prob'] = max(current_period['max_prob'], rain_prob)
+                else:
+                    rain_periods.append(current_period)
+                    current_period = {'start': hour_of_day, 'end': hour_of_day, 'max_prob': rain_prob}
+        else:
+            if current_period is not None and (hour % 24) - current_period['end'] > 2:
+                rain_periods.append(current_period)
+                current_period = None
+    
+    if current_period is not None:
+        rain_periods.append(current_period)
+    
+    if not rain_periods and daily_rain_prob > 35:
+        rain_periods.append({'start': 14, 'end': 18, 'max_prob': daily_rain_prob, 'estimated': True})
+    
+    return rain_periods
+
+def assess_lightning_risk(hourly_data, day_index):
+    """Assesses lightning/thunderstorm risk based on atmospheric instability."""
+    start_hour = day_index * 24
+    end_hour = min((day_index + 1) * 24, len(hourly_data.get('temperature_2m', [])))
+    
+    max_temp = 0
+    max_humidity = 0
+    has_cape = 'cape' in hourly_data
+    max_cape = 0
+    
+    for hour in range(start_hour, end_hour):
+        if hour < len(hourly_data['temperature_2m']):
+            max_temp = max(max_temp, hourly_data['temperature_2m'][hour])
+            max_humidity = max(max_humidity, hourly_data['relativehumidity_2m'][hour])
+            if has_cape and hour < len(hourly_data['cape']):
+                max_cape = max(max_cape, hourly_data['cape'][hour])
+    
+    risk_score = 0
+    
+    if max_temp > 30:
+        risk_score += 20
+    if max_temp > 33:
+        risk_score += 20
+    if max_humidity > 75:
+        risk_score += 20
+    if max_humidity > 85:
+        risk_score += 20
+    
+    if has_cape:
+        if max_cape > 500:
+            risk_score += 20
+        if max_cape > 1000:
+            risk_score += 20
+        if max_cape > 2000:
+            risk_score += 20
+    else:
+        if max_temp > 32 and max_humidity > 80:
+            risk_score += 30
+    
+    if risk_score >= 80:
+        return "⚡ HIGH", "High", max_cape
+    elif risk_score >= 50:
+        return "⚡ MODERATE", "Moderate", max_cape
+    elif risk_score >= 30:
+        return "⚡ LOW", "Low", max_cape
+    else:
+        return "○ MINIMAL", "Minimal", max_cape
+
+def format_time_period(periods):
+    """Formats rain timing periods into readable text."""
+    if not periods:
+        return "No significant rain expected"
+    
+    def format_hour(h):
+        if h == 0:
+            return "12:00 AM"
+        elif h < 12:
+            return f"{h}:00 AM"
+        elif h == 12:
+            return "12:00 PM"
+        else:
+            return f"{h-12}:00 PM"
+    
+    formatted_periods = []
+    for p in periods[:3]:
+        estimated = p.get('estimated', False)
+        prefix = "Likely " if estimated else ""
+        
+        if p['start'] == p['end']:
+            formatted_periods.append(f"{prefix}{format_hour(p['start'])}")
+        else:
+            formatted_periods.append(f"{prefix}{format_hour(p['start'])} - {format_hour(p['end'])}")
+    
+    return ", ".join(formatted_periods)
+
+# ============================================================================
+# ENHANCED FORECAST DISPLAY
+# ============================================================================
+def display_forecast(location_name, raw_data, ai_predictions, weather_pattern):
+    """Displays the enhanced 7-day forecast with AI insights."""
+    print("=" * 75)
+    print(f"📅  PANTHEON AI 7-DAY FORECAST FOR: {location_name}")
+    print("=" * 75)
+    
+    if weather_pattern:
+        print(f"\n🧠 AI WEATHER MEMORY (Last 3 days):")
+        print(f"   Average Precipitation: {weather_pattern['avg_precip']:.1f}mm")
+        print(f"   Rainy Days: {weather_pattern['rain_days']}/3")
+        print(f"   Trend: {weather_pattern['trend'].upper()}")
+        print()
+
+    for i in range(7):
+        ai_pred = ai_predictions[i]
+        day_date = datetime.fromisoformat(raw_data['daily']['time'][i])
+        temp_high, temp_low = raw_data['daily']['temperature_2m_max'][i], raw_data['daily']['temperature_2m_min'][i]
+        sunrise = datetime.fromisoformat(raw_data['daily']['sunrise'][i]).strftime('%I:%M %p')
+        sunset = datetime.fromisoformat(raw_data['daily']['sunset'][i]).strftime('%I:%M %p')
+        total_rain_mm = ai_pred['actual_precip_mm']
+
+        ai_cloud_cover = ai_pred['clouds']
+        ai_rain_prob = ai_pred['rain']
+        
+        rain_timing = "Analysis unavailable"
+        duration_text = "variable"
+        lightning_icon = "○ MINIMAL"
+        lightning_text = "Minimal"
+        cape_value = 0
+        
+        try:
+            rain_periods = analyze_rain_timing(raw_data['hourly'], i, ai_rain_prob)
+            rain_timing = format_time_period(rain_periods)
+            
+            precip_hours = raw_data['daily'].get('precipitation_hours', [None]*7)[i]
+            if precip_hours:
+                duration_text = f"{precip_hours:.1f}h"
+            elif rain_periods:
+                total_hours = sum(p['end'] - p['start'] + 1 for p in rain_periods)
+                duration_text = f"~{total_hours}h" if total_hours > 0 else "brief"
+            else:
+                duration_text = "intermittent"
+        except Exception as e:
+            pass
+        
+        try:
+            lightning_icon, lightning_text, cape_value = assess_lightning_risk(raw_data['hourly'], i)
+        except Exception as e:
+            pass
+        
+        if ai_rain_prob > 70 or total_rain_mm > 10:
+            condition = "🌧️ Rainy"
+        elif ai_rain_prob > 50 or total_rain_mm > 5:
+            condition = "🌦️ Showers Likely"
+        elif ai_rain_prob > 30 or total_rain_mm > 1:
+            condition = "🌦️ Chance of Showers"
+        elif ai_rain_prob > 15 or total_rain_mm > 0.3:
+            condition = "🌤️ Isolated Showers Possible"
+        elif ai_cloud_cover < 30:
+            condition = "☀️ Sunny"
+        elif ai_cloud_cover < 70:
+            condition = "⛅ Partly Cloudy"
+        else:
+            condition = "☁️ Cloudy"
+
+        if total_rain_mm > 20:
+            rain_intensity = "Heavy"
+        elif total_rain_mm > 10:
+            rain_intensity = "Moderate"
+        elif total_rain_mm > 2:
+            rain_intensity = "Light"
+        else:
+            rain_intensity = "Minimal"
+
+        ai_boost = ai_pred.get('ai_boost', 0)
+        if ai_boost > 20:
+            data_quality = "🧠"
+        elif ai_boost > 10:
+            data_quality = "🔍"
+        else:
+            data_quality = "✓"
+
+        conf_val = ai_pred['confidence']
+        if conf_val > 70: 
+            conf_text = "High"
+        elif conf_val > 40: 
+            conf_text = "Moderate"
+        else: 
+            conf_text = "Low"
+
+        wind_index = min(i * 24 + 14, len(raw_data['hourly']['windspeed_10m']) - 1)
+        wind_speed_kmh = raw_data['hourly']['windspeed_10m'][wind_index]
+        wind_desc = "Windy" if wind_speed_kmh > 25 else "Breezy" if wind_speed_kmh > 10 else "Calm"
+
+        print(f"\n🗓️  {day_date.strftime('%A, %B %d')} {data_quality}")
+        print("-" * 60)
+        print(f"   Forecast: {condition}")
+        print(f"   🌡️  High: {temp_high:.1f}°C | Low: {temp_low:.1f}°C (AI: {ai_pred['temp']:.1f}°C)")
+        print(f"   💧  Rain: {ai_rain_prob:.0f}% | Expected: {total_rain_mm:.1f}mm ({rain_intensity})")
+        
+        if ai_boost > 5:
+            print(f"       └─ AI Boost: +{ai_boost:.0f}% confidence adjustment")
+        
+        print(f"   ⏰  Rain Timing: {rain_timing}")
+        print(f"   ⌛  Duration: {duration_text}")
+        print(f"   {lightning_icon}  Lightning: {lightning_text}", end="")
+        if cape_value > 0:
+            print(f" (CAPE: {cape_value:.0f} J/kg)")
+        else:
+            print()
+        print(f"   ☁️  Cloud Cover: {ai_cloud_cover:.0f}%")
+        print(f"   🍃  Wind: {wind_desc} ({wind_speed_kmh:.0f} km/h)")
+        print(f"   🌅  Sun: {sunrise} - {sunset}")
+        print(f"   🤖 AI Confidence: {conf_text} ({conf_val:.1f}%)")
+        
+        if ai_pred.get('ai_insights'):
+            for insight in ai_pred['ai_insights']:
+                print(f"       {insight}")
+
+    print("\n" + "=" * 75)
+    print("💡 ENHANCED WITH AI WEATHER MEMORY & PRESSURE ANALYSIS")
+    print("   The AI now learns from recent weather patterns and atmospheric")
+    print("   pressure changes to provide more accurate tropical forecasts.")
+    print("=" * 75)
+
+# ============================================================================
+# MAIN EXECUTION
+# ============================================================================
+def main():
+    print("--- 🌋 PANTHEON AI WEATHER MODEL v4.0 (Phase 1 Enhanced) ---")
+    print("    ✨ NEW: Weather Memory, Pressure Trends, CAPE Analysis\n")
+    
+    nodes = load_pantheon()
+    if not nodes: 
+        return
+    
+    weather_memory = load_weather_memory()
+    weather_pattern = get_recent_weather_pattern(weather_memory)
+    
+    if weather_pattern:
+        print(f"🧠 Loaded weather memory: {len(weather_memory.get('history', []))} days of history")
+    
+    primary_data = fetch_open_meteo_data(TARGET_LAT, TARGET_LON)
+    if not primary_data: 
+        return
+    
+    backup_data = fetch_weatherapi_backup(TARGET_LAT, TARGET_LON)
+    atmospheric_data = merge_weather_sources(primary_data, backup_data)
+    print()
+
+    print("--- INITIATING 7-DAY AI-ENHANCED FORECAST ---")
+    ai_forecasts = []
+    
+    for day_index in range(7):
+        hour_index_for_day = min((day_index * 24) + 14, len(atmospheric_data['hourly']['temperature_2m']) - 1)
+        day_str = atmospheric_data['daily']['time'][day_index]
+        print(f"🧠 AI deliberating on {datetime.fromisoformat(day_str).strftime('%A, %b %d')}...")
+        
+        state_vector = encode_atmospheric_state(
+            atmospheric_data['hourly'],
+            atmospheric_data['daily'],
+            hour_index_for_day,
+            day_index,
+            weather_pattern
+        )
+        
+        actual_precip = atmospheric_data['daily']['precipitation_sum'][day_index]
+        actual_rain_prob = atmospheric_data['daily']['precipitation_probability_max'][day_index]
+        
+        ai_prediction = run_weather_deliberation(
+            nodes, 
+            state_vector, 
+            actual_precip, 
+            actual_rain_prob,
+            weather_pattern
+        )
+        ai_forecasts.append(ai_prediction)
+        time.sleep(0.2)
+    
+    print("✅ AI deliberation complete.\n")
+
+    display_forecast(LOCATION_NAME, atmospheric_data, ai_forecasts, weather_pattern)
+    
+    try:
+        today_data = {
+            'date': datetime.now().isoformat(),
+            'precipitation': atmospheric_data['daily']['precipitation_sum'][0],
+            'temp_max': atmospheric_data['daily']['temperature_2m_max'][0],
+            'predicted_rain': ai_forecasts[0]['rain']
+        }
+        
+        if 'history' not in weather_memory:
+            weather_memory['history'] = []
+        
+        weather_memory['history'].append(today_data)
+        weather_memory['history'] = weather_memory['history'][-30:]
+        
+        save_weather_memory(weather_memory)
+    except Exception as e:
+        print(f"⚠️  Could not update weather memory: {e}")
+    
+if __name__ == "__main__":
+    main()
+
+
