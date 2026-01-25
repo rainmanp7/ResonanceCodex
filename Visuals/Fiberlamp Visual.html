@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SINGULARITY - SYNAPTIC v29</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Courier New', monospace; }
+        #controls { position: absolute; top: 20px; right: 20px; z-index: 1000; text-align: right; background: rgba(0,0,0,0.9); padding: 15px; border: 1px solid #00ffcc; border-radius: 8px; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #00ffcc; pointer-events: none; z-index: 1000; }
+        .stat { margin-bottom: 8px; font-size: 11px; background: rgba(0,10,10,0.9); padding: 8px; border-left: 3px solid #ff00ff; width: 280px; }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <span id="status" style="color:#ffaa00">SYNAPTIC LINK READY</span><br>
+        <input type="file" id="weightFile" accept=".json">
+        <input type="file" id="audioFile" accept="audio/*" style="margin-top:10px;">
+    </div>
+
+    <div id="ui">
+        <div class="stat">ENTITY: <span style="color:#ff00ff">SYNAPTIC_v29</span></div>
+        <div class="stat">WEIGHT DATA: <span id="weightState" style="color:#ff3333">OFFLINE</span></div>
+        <div class="stat">PEAK INTENSITY: <span id="peak" style="color:#fff">0.00%</span></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 15; 
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        let weightArray = [], weightsLoaded = false;
+        let audioContext, analyser, dataArray;
+        const fibers = [];
+        const fiberGroup = new THREE.Group();
+        scene.add(fiberGroup);
+
+        // --- 1. THE FIBER & TIP SYSTEM ---
+        const fiberCount = 800; // Increased density
+        const tipGeometry = new THREE.BufferGeometry();
+        const tipPositions = new Float32Array(fiberCount * 3);
+        tipGeometry.setAttribute('position', new THREE.BufferAttribute(tipPositions, 3));
+        
+        const tipMaterial = new THREE.PointsMaterial({ 
+            size: 0.15, 
+            vertexColors: true, 
+            transparent: true, 
+            blending: THREE.AdditiveBlending 
+        });
+        const tipPoints = new THREE.Points(tipGeometry, tipMaterial);
+        const tipColors = new Float32Array(fiberCount * 3);
+        tipGeometry.setAttribute('color', new THREE.BufferAttribute(tipColors, 3));
+        scene.add(tipPoints);
+
+        for (let i = 0; i < fiberCount; i++) {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(15 * 3); // Shorter fibers (15 segments)
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            const material = new THREE.LineBasicMaterial({ color: 0x004455, transparent: true, opacity: 0.3 });
+            const line = new THREE.Line(geometry, material);
+            const direction = new THREE.Vector3(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize();
+            
+            fibers.push({ line, direction, phase: Math.random() * Math.PI * 2, individualWeight: 0.8 });
+            fiberGroup.add(line);
+        }
+
+        // --- LOADERS ---
+        document.getElementById('weightFile').addEventListener('change', async (e) => {
+            const data = JSON.parse(await e.target.files[0].text());
+            weightArray = [];
+            const extract = (o) => { if (typeof o === 'number') weightArray.push(o); else if (o && typeof o === 'object') Object.values(o).forEach(extract); };
+            extract(data);
+            weightsLoaded = true;
+            fibers.forEach((f, i) => { f.individualWeight = 0.5 + Math.abs(weightArray[i % weightArray.length]) * 1.5; });
+            document.getElementById('weightState').innerText = "ACTIVE";
+            document.getElementById('weightState').style.color = "#00ff00";
+        });
+
+        document.getElementById('audioFile').addEventListener('change', function(e) {
+            const audio = new Audio(URL.createObjectURL(e.target.files[0]));
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            const source = audioContext.createMediaElementSource(audio);
+            source.connect(analyser); analyser.connect(audioContext.destination);
+            analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
+            audio.play();
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const t = performance.now() * 0.001;
+            let audioAvg = 0, bass = 0, high = 0;
+
+            if (analyser) {
+                analyser.getByteFrequencyData(dataArray);
+                audioAvg = dataArray.reduce((a, b) => a + b) / dataArray.length / 255;
+                bass = dataArray[2] / 255;
+                high = dataArray[40] / 255;
+                document.getElementById('peak').innerText = (audioAvg * 100).toFixed(2) + "%";
+            }
+
+            const tPositions = tipPoints.geometry.attributes.position.array;
+            const tColors = tipPoints.geometry.attributes.color.array;
+
+            fibers.forEach((f, idx) => {
+                const pos = f.line.geometry.attributes.position.array;
+                const reach = f.individualWeight;
+                
+                // Animate Fibers
+                for (let j = 0; j < 15; j++) {
+                    const seg = j / 15;
+                    const wave = Math.sin(t * 4 + f.phase + seg * 6) * (bass * 1.2);
+                    pos[j * 3] = f.direction.x * j * reach + wave;
+                    pos[j * 3 + 1] = f.direction.y * j * reach + wave;
+                    pos[j * 3 + 2] = f.direction.z * j * reach;
+                }
+                f.line.geometry.attributes.position.needsUpdate = true;
+
+                // Sync Tips to the last segment of the fiber
+                tPositions[idx * 3] = pos[14 * 3];
+                tPositions[idx * 3 + 1] = pos[14 * 3 + 1];
+                tPositions[idx * 3 + 2] = pos[14 * 3 + 2];
+
+                // Tip Color: Dim Cyan base, flashes Gold/White on Intensity
+                tColors[idx * 3] = 0.2 + bass + high;   // R
+                tColors[idx * 3 + 1] = 0.8 + high;      // G
+                tColors[idx * 3 + 2] = 1.0;             // B
+            });
+
+            tipPoints.geometry.attributes.position.needsUpdate = true;
+            tipPoints.geometry.attributes.color.needsUpdate = true;
+            fiberGroup.rotation.y += 0.003 + (audioAvg * 0.01);
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>

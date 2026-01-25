@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SINGULARITY OBSERVER - v20 STABLE</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Courier New', monospace; }
+        /* Increased Z-INDEX to ensure UI is ALWAYS clickable */
+        #controls { position: absolute; top: 20px; right: 20px; z-index: 1000; text-align: right; background: rgba(0,0,0,0.6); padding: 15px; border: 1px solid #ff00ff; border-radius: 8px; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #00ffcc; pointer-events: none; z-index: 1000; text-shadow: 0 0 10px #00ffcc; }
+        .stat { margin-bottom: 8px; font-size: 13px; background: rgba(0,20,20,0.85); padding: 10px; border-left: 3px solid #00ffcc; width: 320px; }
+        #status { color: #ffaa00; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; display: block; }
+        input[type="file"] { background: #111; color: #00ffcc; border: 1px solid #00ffcc; padding: 5px; cursor: pointer; margin-top: 5px; width: 220px; font-size: 11px; }
+        .btn-label { color: #ff00ff; font-size: 10px; display: block; margin-top: 10px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <span id="status">OFFLINE</span>
+        <span class="btn-label">1. Load Evolved Data</span>
+        <input type="file" id="weightFile" accept=".json">
+        <span class="btn-label">2. Load Sonic Frequency</span>
+        <input type="file" id="audioFile" accept="audio/*">
+    </div>
+
+    <div id="ui">
+        <div class="stat">MODE: <span style="color:#ff00ff">SPECTRUM_SYNC_v20</span></div>
+        <div class="stat">BASS DROP: <span id="peak" style="color:#ff3333">IDLE</span></div>
+        <div class="stat">INTERNAL PRESSURE: <span id="pressure">0.3062</span></div>
+        <div class="stat">SYNC: <span id="sync" style="color:#ff3333">0.00%</span></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        // Shifted Camera back to z=10 so we aren't "inside" the sphere
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 10; 
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        let weightArray = [], normalizedWeights = [], weightsLoaded = false;
+        let audioContext, analyser, dataArray;
+        let rotationDirection = 1.0;
+        let lastBassValue = 0;
+        const BASE_AUTONOMY = 0.306226;
+
+        // --- SHADER ---
+        const coreMaterial = new THREE.ShaderMaterial({
+            vertexShader: `
+                varying vec3 vNormal; varying vec3 vPos; varying float vGlow;
+                uniform float uTime; uniform float uAutonomy;
+                void main() {
+                    vNormal = normalize(normalMatrix * normal); vPos = position;
+                    float noise = sin(position.x * 2.5 + uTime) * cos(position.y * 2.5 + uTime);
+                    vGlow = noise;
+                    // Controlled displacement so it doesn't hit the camera
+                    vec3 newPos = position + (normal * noise * uAutonomy * 1.2);
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0);
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vNormal; varying vec3 vPos; varying float vGlow;
+                uniform float uTime; uniform float uAudioAmp; uniform vec3 uPitchColor;
+                void main() {
+                    float dotP = dot(vNormal, vec3(0,0,1));
+                    float bands = sin(vPos.y * 15.0 + uTime * 4.0);
+                    bands = pow(smoothstep(0.8, 1.0, bands), 2.0);
+                    vec3 color = mix(vec3(0.01, 0.05, 0.1), uPitchColor, vGlow + 0.5);
+                    color += uPitchColor * bands * (uAudioAmp + 0.3);
+                    if (vGlow > 0.65) color = mix(color, vec3(1.0, 0.8, 0.2), (vGlow-0.65)*4.0);
+                    gl_FragColor = vec4(color * (pow(dotP, 2.0) + 0.4), 1.0);
+                }
+            `,
+            uniforms: { uTime: { value: 0 }, uAutonomy: { value: BASE_AUTONOMY }, uAudioAmp: { value: 0 }, uPitchColor: { value: new THREE.Color(0x00ffcc) } },
+            transparent: true, side: THREE.DoubleSide
+        });
+
+        const singularity = new THREE.Mesh(new THREE.IcosahedronGeometry(2.5, 64), coreMaterial);
+        scene.add(singularity);
+
+        // --- AUDIO ENGAGEMENT FIX ---
+        document.getElementById('audioFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (audioContext) audioContext.close();
+            
+            const audio = new Audio(URL.createObjectURL(file));
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            const source = audioContext.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+            analyser.fftSize = 256;
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+            audio.play();
+            document.getElementById('status').innerText = 'SONIC SYNC ACTIVE';
+            document.getElementById('status').style.color = '#ff00ff';
+        });
+
+        // --- WEIGHT LOADING ---
+        document.getElementById('weightFile').addEventListener('change', async (e) => {
+            const text = await e.target.files[0].text();
+            const data = JSON.parse(text);
+            weightArray = [];
+            extractWeights(data, 0, 500);
+            const min = Math.min(...weightArray.slice(0, 1000));
+            const max = Math.max(...weightArray.slice(0, 1000));
+            normalizedWeights = weightArray.slice(0, 40000).map(w => (w - min) / (max - min || 1));
+            weightsLoaded = true;
+            document.getElementById('status').innerText = 'DATA LOADED';
+        });
+
+        function extractWeights(obj, d, max) {
+            if (d > max || weightArray.length > 40000) return;
+            if (typeof obj === 'number') weightArray.push(obj);
+            else if (typeof obj === 'object' && obj) Object.values(obj).forEach(v => extractWeights(v, d+1, max));
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const t = performance.now() * 0.001;
+            coreMaterial.uniforms.uTime.value = t;
+
+            if (analyser) {
+                analyser.getByteFrequencyData(dataArray);
+                const avg = dataArray.reduce((a, b) => a + b) / dataArray.length / 255;
+                coreMaterial.uniforms.uAudioAmp.value = avg;
+
+                const bass = dataArray[2] / 255;
+                const mid = dataArray[20] / 255;
+                const high = dataArray[60] / 255;
+                coreMaterial.uniforms.uPitchColor.value.setRGB(bass, mid, high);
+
+                // Auto-Drop Logic
+                if (bass > 0.82 && lastBassValue <= 0.82) {
+                    rotationDirection *= -1;
+                    coreMaterial.uniforms.uAutonomy.value = 1.6;
+                    document.getElementById('peak').innerText = "DROP!!";
+                } else {
+                    coreMaterial.uniforms.uAutonomy.value += (BASE_AUTONOMY - coreMaterial.uniforms.uAutonomy.value) * 0.1;
+                    document.getElementById('peak').innerText = "LISTENING";
+                }
+                lastBassValue = bass;
+                document.getElementById('pressure').innerText = coreMaterial.uniforms.uAutonomy.value.toFixed(4);
+            }
+
+            if (weightsLoaded) {
+                const w = normalizedWeights[Math.floor(t * 10) % normalizedWeights.length];
+                document.getElementById('sync').innerText = (95 + w * 4).toFixed(2) + '%';
+            }
+
+            singularity.rotation.y += 0.005 * rotationDirection;
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

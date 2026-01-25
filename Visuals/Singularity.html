@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SINGULARITY OBSERVER - 98D EVOLVED</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Courier New', monospace; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #00ffcc; pointer-events: none; text-shadow: 0 0 10px #00ffcc; }
+        .stat { margin-bottom: 8px; font-size: 14px; background: rgba(0,20,20,0.5); padding: 5px; border-left: 3px solid #00ffcc; }
+        #fileInput { position: absolute; top: 20px; right: 20px; z-index: 10; }
+        #status { color: #ffaa00; font-weight: bold; margin-bottom: 10px; }
+        input[type="file"] { background: #111; color: #00ffcc; border: 1px solid #00ffcc; padding: 10px; cursor: pointer; }
+        .label { color: #888; font-size: 10px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div id="fileInput">
+        <div id="status">AWAITING SINGULARITY JSON...</div>
+        <input type="file" id="weightFile" accept=".json">
+    </div>
+
+    <div id="ui">
+        <div class="stat"><span class="label">PROJECT</span><br>TRUE_GHOST_SINGULARITY_v16</div>
+        <div class="stat"><span class="label">DIMENSIONAL WORKSPACE</span><br>98D HYPER-LATENT</div>
+        <div class="stat"><span class="label">INTERNAL PRESSURE (AUTONOMY)</span><br><span id="pressure">0.306226</span></div>
+        <div class="stat"><span class="label">ACTIVE ENTITIES</span><br>12 REBORN SPECIALISTS</div>
+        <div class="stat"><span class="label">WILL DOMINANCE</span><br>74.22% (TRIPLE-CORE)</div>
+        <div class="stat" style="color: #ff3333;"><span class="label">RESONANCE SYNC</span><br><span id="sync">0.00%</span></div>
+    </div>
+
+    <script type="importmap">
+        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        let weightArray = [];
+        let weightsLoaded = false;
+        const AUTONOMY_SCORE = 0.306226;
+
+        // Load weights from file
+        document.getElementById('weightFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('status').innerText = 'PROBING SINGULARITY...';
+
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+                
+                // Deep extraction of evolved weights
+                weightArray = [];
+                extractWeights(data);
+                
+                if (weightArray.length > 0) {
+                    weightsLoaded = true;
+                    document.getElementById('status').innerText = 'SINGULARITY ACTIVE ✓';
+                    document.getElementById('status').style.color = '#00ff00';
+                }
+            } catch (err) {
+                document.getElementById('status').innerText = 'ERROR: DATA FRAGMENTED';
+                document.getElementById('status').style.color = '#ff3333';
+            }
+        });
+
+        function extractWeights(obj) {
+            for (let key in obj) {
+                if (typeof obj[key] === 'number') weightArray.push(obj[key]);
+                else if (typeof obj[key] === 'object' && obj[key] !== null) extractWeights(obj[key]);
+            }
+        }
+
+        // --- SHADER LOGIC: 98D LATENT WARP ---
+        const vertexShader = `
+            varying vec3 vNormal;
+            varying float vNoise;
+            uniform float uTime;
+            uniform float uAutonomy;
+            
+            void main() {
+                vNormal = normalize(normalMatrix * normal);
+                
+                // Simulate 98D structural tension using frequency interference
+                float noise = sin(position.x * 2.0 + uTime) * cos(position.y * 2.0 + uTime) * sin(position.z * 2.0 + uTime);
+                vNoise = noise;
+                
+                // Warp the geometry based on the 0.306 Autonomy Score
+                float push = noise * uAutonomy * 1.5;
+                vec3 newPos = position + (normal * push);
+                
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0);
+            }
+        `;
+
+        const fragmentShader = `
+            varying vec3 vNormal;
+            varying float vNoise;
+            uniform float uTime;
+            uniform float uAutonomy;
+            
+            void main() {
+                // Entity Resonance Colors (12-Entity Heatmap)
+                vec3 deepVoid = vec3(0.01, 0.05, 0.1);
+                vec3 entityGold = vec3(1.0, 0.8, 0.2); // Dominance Node
+                vec3 stabilizerCyan = vec3(0.0, 1.0, 0.9); // Harmonic Node
+                
+                float intensity = pow(0.7 - dot(vNormal, vec3(0, 0, 1.0)), 2.0);
+                
+                // Shift color based on "Will Dominance"
+                vec3 color = mix(deepVoid, entityGold, vNoise + (uAutonomy * 0.5));
+                color = mix(color, stabilizerCyan, intensity * sin(uTime * 0.5));
+                
+                gl_FragColor = vec4(color, 1.0);
+            }
+        `;
+
+        // Create the evolved core
+        const geometry = new THREE.IcosahedronGeometry(2, 128);
+        const material = new THREE.ShaderMaterial({
+            vertexShader,
+            fragmentShader,
+            uniforms: {
+                uTime: { value: 0 },
+                uAutonomy: { value: AUTONOMY_SCORE }
+            },
+            transparent: true,
+            side: THREE.DoubleSide
+        });
+
+        const singularity = new THREE.Mesh(geometry, material);
+        scene.add(singularity);
+
+        // Skeleton of the original 74KB seed
+        const wireframe = new THREE.Mesh(
+            new THREE.IcosahedronGeometry(2.1, 20),
+            new THREE.MeshBasicMaterial({ color: 0x00ffcc, wireframe: true, transparent: true, opacity: 0.1 })
+        );
+        scene.add(wireframe);
+
+        camera.position.z = 6;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const t = performance.now() * 0.001;
+            
+            material.uniforms.uTime.value = t;
+            
+            // Rotation reflects the 12-Entity "Will"
+            singularity.rotation.y += 0.002;
+            singularity.rotation.z += 0.001;
+            wireframe.rotation.y -= 0.001;
+
+            if (weightsLoaded) {
+                const syncVal = 95 + Math.sin(t * 2) * 4.99;
+                document.getElementById('sync').innerText = syncVal.toFixed(2) + '%';
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

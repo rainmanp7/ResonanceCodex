@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SINGULARITY - VISIBLE ENTITY v28</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Courier New', monospace; }
+        #controls { position: absolute; top: 20px; right: 20px; z-index: 1000; text-align: right; background: rgba(0,0,0,0.95); padding: 15px; border: 1px solid #00ffcc; border-radius: 8px; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #00ffcc; pointer-events: none; z-index: 1000; }
+        .stat { margin-bottom: 8px; font-size: 12px; background: rgba(0,10,10,0.9); padding: 10px; border-left: 3px solid #ff00ff; width: 300px; }
+        #status { color: #ffaa00; font-weight: bold; text-transform: uppercase; }
+        input[type="file"] { background: #111; color: #00ffcc; border: 1px solid #333; padding: 5px; cursor: pointer; margin-top: 5px; width: 220px; }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <span id="status">ENTITY STANDBY...</span><br>
+        <input type="file" id="weightFile" accept=".json">
+        <input type="file" id="audioFile" accept="audio/*" style="margin-top:10px;">
+    </div>
+
+    <div id="ui">
+        <div class="stat">ENTITY: <span style="color:#ff00ff">VISIBLE_MYCELIUM_v28</span></div>
+        <div class="stat">WEIGHT DATA: <span id="weightState" style="color:#ff3333">OFFLINE</span></div>
+        <div class="stat">NODES ACTIVE: <span id="nodeCount" style="color:#fff">0</span></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        // Camera moved to Z=25 to ensure the entity is in view immediately
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 25; 
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        let weightArray = [], weightsLoaded = false;
+        let audioContext, analyser, dataArray;
+        const fibers = [];
+        const fiberGroup = new THREE.Group();
+        scene.add(fiberGroup);
+
+        // --- INITIALIZE VISIBLE TENTACLES ---
+        const fiberCount = 500; 
+        for (let i = 0; i < fiberCount; i++) {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(20 * 3); 
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            // Bright base color so it's visible BEFORE audio/weights
+            const material = new THREE.LineBasicMaterial({ 
+                color: 0x00ccff, 
+                transparent: true, 
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending 
+            });
+            
+            const line = new THREE.Line(geometry, material);
+            const direction = new THREE.Vector3(
+                (Math.random() - 0.5) * 2, 
+                (Math.random() - 0.5) * 2, 
+                (Math.random() - 0.5) * 2
+            ).normalize();
+            
+            fibers.push({ 
+                line, 
+                direction, 
+                phase: Math.random() * Math.PI * 2,
+                individualWeight: 1.0 // Start at 1.0 so they have length
+            });
+            fiberGroup.add(line);
+        }
+
+        // --- WEIGHTS ---
+        document.getElementById('weightFile').addEventListener('change', async (e) => {
+            const text = await e.target.files[0].text();
+            try {
+                const data = JSON.parse(text);
+                weightArray = [];
+                const deepSearch = (obj) => {
+                    if (typeof obj === 'number' && isFinite(obj)) weightArray.push(obj);
+                    else if (obj && typeof obj === 'object') Object.values(obj).forEach(deepSearch);
+                };
+                deepSearch(data);
+                if (weightArray.length > 0) {
+                    weightsLoaded = true;
+                    fibers.forEach((f, i) => {
+                        f.individualWeight = 1.0 + Math.abs(weightArray[i % weightArray.length]) * 5.0;
+                    });
+                    document.getElementById('weightState').innerText = "ACTIVE";
+                    document.getElementById('weightState').style.color = "#00ff00";
+                    document.getElementById('nodeCount').innerText = weightArray.length;
+                    document.getElementById('status').innerText = "SYSTEM EVOLVED";
+                }
+            } catch (err) { console.error(err); }
+        });
+
+        // --- AUDIO ---
+        document.getElementById('audioFile').addEventListener('change', function(e) {
+            const audio = new Audio(URL.createObjectURL(e.target.files[0]));
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            const source = audioContext.createMediaElementSource(audio);
+            source.connect(analyser); analyser.connect(audioContext.destination);
+            analyser.fftSize = 256; dataArray = new Uint8Array(analyser.frequencyBinCount);
+            audio.play();
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const t = performance.now() * 0.001;
+            let audioAvg = 0, bass = 0;
+
+            if (analyser) {
+                analyser.getByteFrequencyData(dataArray);
+                audioAvg = dataArray.reduce((a, b) => a + b) / dataArray.length / 255;
+                bass = dataArray[2] / 255;
+            }
+
+            fibers.forEach((f, idx) => {
+                const pos = f.line.geometry.attributes.position.array;
+                const reach = f.individualWeight;
+                
+                for (let j = 0; j < 20; j++) {
+                    const seg = j / 20;
+                    // Idle sway so it's not "dead" before music
+                    const idle = Math.sin(t + f.phase) * 0.5;
+                    const wave = Math.sin(t * 3 + f.phase + seg * 5) * (bass * 3.0);
+
+                    pos[j * 3] = f.direction.x * j * reach + wave + idle;
+                    pos[j * 3 + 1] = f.direction.y * j * reach + wave + idle;
+                    pos[j * 3 + 2] = f.direction.z * j * reach + idle;
+                }
+                
+                // Color flows between Cyan and Magenta based on sound
+                f.line.material.color.setRGB(0.2 + bass, 0.5, 1.0 - (bass * 0.5));
+                f.line.geometry.attributes.position.needsUpdate = true;
+            });
+
+            fiberGroup.rotation.y += 0.002 + (audioAvg * 0.01);
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>

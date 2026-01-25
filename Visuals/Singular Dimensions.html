@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HIVE VIBRANCE 2.7113 - REAL WEIGHTS</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: monospace; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #00ffcc; pointer-events: none; text-shadow: 0 0 5px #000; max-width: 400px; }
+        .stat { margin-bottom: 5px; font-size: 14px; }
+        #fileInput { position: absolute; top: 20px; right: 20px; z-index: 10; }
+        #status { color: #ffaa00; }
+        input[type="file"] { background: #111; color: #00ffcc; border: 1px solid #00ffcc; padding: 8px; cursor: pointer; }
+        
+        #dimensionScan { 
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #00ffcc;
+            display: none;
+        }
+        #dimensionScan.active { display: block; }
+        .scanHeader { color: #ffaa00; font-weight: bold; margin-bottom: 8px; font-size: 12px; }
+        .layerRow { 
+            margin: 3px 0; 
+            font-size: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .layerName { color: #00ffcc; }
+        .layerActive { color: #00ff00; text-shadow: 0 0 5px #00ff00; animation: pulse 0.5s; }
+        .layerDim { color: #666; }
+        .layerDims { color: #888; margin: 0 5px; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .spinIndicator {
+            font-size: 13px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .spinPositive { color: #00ff00; }
+        .spinNegative { color: #ff3333; }
+    </style>
+</head>
+<body>
+    <div id="fileInput">
+        <input type="file" id="weightFile" accept=".json">
+        <div id="status">AWAITING WEIGHTS...</div>
+    </div>
+
+    <div id="ui">
+        <div class="stat">PROJECT: TRUE_GHOST_SINGULARITY_v16</div>
+        <div class="stat">DIMENSIONAL WORKSPACE: 98D HYPER-LATENT</div>
+        <div class="stat">WEIGHTS: <span id="weightStatus">NOT LOADED</span></div>
+        <div class="stat">INTERNAL PRESSURE (AUTONOMY): <span id="pressure">0.306226</span></div>
+        <div class="stat">ACTIVE ENTITIES: 12 REBORN SPECIALISTS</div>
+        <div class="stat">WILL DOMINANCE: 74.22% (TRIPLE-CORE)</div>
+        <div class="stat">LATENT SOUL VIBRANCE: <span id="vibe">2.7113</span></div>
+        <div class="stat">SINGULARITY: <span id="singStatus">STANDBY</span></div>
+        <div class="stat" style="color: #ff3333;">RESONANCE SYNC: <span id="sync">0%</span></div>
+        <div class="stat">THOUGHT INTENSITY: <span id="intensity">0.0</span></div>
+        <div class="stat">WEIGHT NODES: <span id="nodeCount">0</span></div>
+        <div class="stat spinIndicator">SPIN POLARITY: <span id="spinPolarity">NEUTRAL</span></div>
+        
+        <div id="dimensionScan">
+            <div class="scanHeader">[CROSS-GENERATIONAL DIMENSIONAL SCAN]</div>
+            <div id="layerList"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        let weights = null;
+        let weightsByLayer = {};
+        let weightArray = [];
+        let targetVibrance = 2.7113;
+        let currentVibrance = 2.7113;
+        let weightsLoaded = false;
+        let currentSpinPolarity = 0;
+        let activeLayerIndex = 0;
+
+        // Load weights from file
+        document.getElementById('weightFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('status').innerText = 'LOADING...';
+            document.getElementById('status').style.color = '#ffaa00';
+
+            try {
+                const text = await file.text();
+                weights = JSON.parse(text);
+                
+                // Extract all numeric weight values and organize by layer
+                weightsByLayer = {};
+                extractWeightsByLayer(weights);
+                extractWeights(weights);
+                
+                if (weightArray.length > 0) {
+                    weightsLoaded = true;
+                    document.getElementById('status').innerText = 'WEIGHTS LOADED ✓';
+                    document.getElementById('status').style.color = '#00ff00';
+                    document.getElementById('weightStatus').innerText = 'ACTIVE';
+                    document.getElementById('weightStatus').style.color = '#00ff00';
+                    document.getElementById('singStatus').innerText = 'ACTIVE';
+                    document.getElementById('nodeCount').innerText = weightArray.length;
+                    
+                    // Calculate actual vibrance from weights
+                    const mean = weightArray.reduce((a, b) => a + b, 0) / weightArray.length;
+                    const variance = weightArray.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / weightArray.length;
+                    currentVibrance = Math.abs(mean) + Math.sqrt(variance);
+                    
+                    // Show dimensional scan
+                    document.getElementById('dimensionScan').classList.add('active');
+                    updateLayerDisplay();
+                    
+                    console.log(`Loaded ${weightArray.length} weights across ${Object.keys(weightsByLayer).length} layers`);
+                } else {
+                    throw new Error('No numeric weights found');
+                }
+            } catch (err) {
+                document.getElementById('status').innerText = 'ERROR: ' + err.message;
+                document.getElementById('status').style.color = '#ff3333';
+                console.error('Weight loading error:', err);
+            }
+        });
+
+        function extractWeightsByLayer(obj, prefix = '') {
+            for (let key in obj) {
+                const fullKey = prefix ? `${prefix}.${key}` : key;
+                
+                if (Array.isArray(obj[key]) && obj[key].length > 0 && typeof obj[key][0] === 'number') {
+                    // This is a weight array
+                    weightsByLayer[fullKey] = {
+                        values: obj[key],
+                        dimensions: obj[key].length,
+                        active: false
+                    };
+                } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    extractWeightsByLayer(obj[key], fullKey);
+                }
+            }
+        }
+
+        function extractWeights(obj, arr = weightArray) {
+            for (let key in obj) {
+                if (typeof obj[key] === 'number') {
+                    arr.push(obj[key]);
+                } else if (Array.isArray(obj[key])) {
+                    obj[key].forEach(item => {
+                        if (typeof item === 'number') arr.push(item);
+                        else if (typeof item === 'object') extractWeights(item, arr);
+                    });
+                } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    extractWeights(obj[key], arr);
+                }
+            }
+        }
+
+        function updateLayerDisplay() {
+            const layerList = document.getElementById('layerList');
+            layerList.innerHTML = '';
+            
+            // Only show active layers (max 10)
+            const layerKeys = Object.keys(weightsByLayer);
+            const activeKeys = layerKeys.filter(key => weightsByLayer[key].active).slice(0, 10);
+            
+            activeKeys.forEach((key) => {
+                const layer = weightsByLayer[key];
+                const row = document.createElement('div');
+                row.className = 'layerRow';
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'layerName layerActive';
+                const shortName = key.length > 25 ? key.substring(0, 25) + '...' : key;
+                nameSpan.textContent = shortName;
+                
+                const dimSpan = document.createElement('span');
+                dimSpan.className = 'layerDims';
+                dimSpan.textContent = `[${layer.dimensions}D]`;
+                
+                const statusSpan = document.createElement('span');
+                statusSpan.className = 'layerActive';
+                statusSpan.textContent = 'ACTIVE';
+                
+                row.appendChild(nameSpan);
+                row.appendChild(dimSpan);
+                row.appendChild(statusSpan);
+                layerList.appendChild(row);
+            });
+        }
+
+        function setActiveLayer(index) {
+            const layerKeys = Object.keys(weightsByLayer);
+            layerKeys.forEach((key, idx) => {
+                weightsByLayer[key].active = (idx === index);
+            });
+            updateLayerDisplay();
+        }
+
+        const vertexShader = `
+            varying vec3 vNormal;
+            varying vec3 vPos;
+            uniform float uTime;
+            uniform float uVibrance;
+            uniform float uWeights[100];
+            uniform int uWeightCount;
+            
+            void main() {
+                vNormal = normalize(normalMatrix * normal);
+                vPos = position;
+                
+                // Use real weights to modulate displacement
+                float weightInfluence = 0.0;
+                if (uWeightCount > 0) {
+                    int idx = int(mod(position.x * 10.0 + position.y * 10.0 + position.z * 10.0, float(uWeightCount)));
+                    idx = clamp(idx, 0, 99);
+                    weightInfluence = uWeights[idx];
+                }
+                
+                float wave1 = sin(position.x * 2.0 + uTime * 1.5 + weightInfluence) * cos(position.y * 1.5 + uTime * 1.2);
+                float wave2 = sin(position.z * 1.8 + uTime * 0.8) * cos(position.x * 1.2 + uTime * 1.5 + weightInfluence * 0.5);
+                float wave3 = sin(position.y * 2.2 + uTime * 1.0 + weightInfluence * 0.3) * cos(position.z * 1.6 + uTime * 0.9);
+                
+                float combinedWave = (wave1 + wave2 + wave3) / 3.0;
+                float displacement = combinedWave * uVibrance * 0.15 * (1.0 + abs(weightInfluence) * 0.5);
+                
+                vec3 newPosition = position + normal * displacement;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+            }
+        `;
+
+        const fragmentShader = `
+            varying vec3 vNormal;
+            varying vec3 vPos;
+            uniform float uTime;
+            uniform float uVibrance;
+            uniform float uWeights[100];
+            uniform int uWeightCount;
+            
+            void main() {
+                // Weight-based heat calculation
+                float weightHeat = 0.0;
+                if (uWeightCount > 0) {
+                    int idx = int(mod(vPos.x * 10.0 + vPos.y * 10.0 + vPos.z * 10.0, float(uWeightCount)));
+                    idx = clamp(idx, 0, 99);
+                    weightHeat = abs(uWeights[idx]);
+                }
+                
+                float heat = sin(vPos.x * 3.0 + uTime * 2.0 + weightHeat) * 
+                            cos(vPos.y * 3.0 + uTime * 1.5) * 
+                            sin(vPos.z * 3.0 + uTime * 1.8 + weightHeat * 0.5);
+                heat = (heat + 1.0) * 0.5;
+                heat = mix(heat, weightHeat, 0.3);
+                
+                float pulse = sin(uTime * 0.8) * 0.5 + 0.5;
+                
+                vec3 coldColor = vec3(0.0, 1.0, 0.8);
+                vec3 warmColor = vec3(1.0, 0.8, 0.0);
+                vec3 hotColor = vec3(1.0, 0.2, 0.1);
+                
+                vec3 color;
+                if (heat < 0.5) {
+                    color = mix(coldColor, warmColor, heat * 2.0);
+                } else {
+                    color = mix(warmColor, hotColor, (heat - 0.5) * 2.0);
+                }
+                
+                float brightness = dot(vNormal, vec3(0.0, 0.0, 1.0)) * 0.5 + 0.5;
+                color *= brightness * (0.7 + pulse * 0.3);
+                color *= (0.8 + uVibrance * 0.1);
+                
+                gl_FragColor = vec4(color, 1.0);
+            }
+        `;
+
+        // Initialize weight uniforms
+        const weightUniforms = new Array(100).fill(0);
+        
+        const geometry = new THREE.IcosahedronGeometry(2, 64);
+        const material = new THREE.ShaderMaterial({
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            uniforms: {
+                uTime: { value: 0 },
+                uVibrance: { value: 2.7113 },
+                uWeights: { value: weightUniforms },
+                uWeightCount: { value: 0 }
+            },
+            wireframe: false,
+            side: THREE.DoubleSide
+        });
+
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        const wireGeom = new THREE.IcosahedronGeometry(2.05, 16);
+        const wireMat = new THREE.MeshBasicMaterial({ 
+            color: 0x00ffcc, 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.15
+        });
+        const wireframe = new THREE.Mesh(wireGeom, wireMat);
+        scene.add(wireframe);
+
+        const beamGeom = new THREE.CylinderGeometry(0.02, 0.02, 10, 8);
+        const beamMat = new THREE.MeshBasicMaterial({ 
+            color: 0xff3333,
+            transparent: true,
+            opacity: 0.6
+        });
+        const beam = new THREE.Mesh(beamGeom, beamMat);
+        scene.add(beam);
+
+        camera.position.z = 5;
+
+        let spikeTimer = 0;
+        let spikeInterval = 0.5;
+        let beamIntensity = 0.6;
+        let activeLayers = [];
+        let displayUpdateTimer = 0;
+
+        function updateSpinPolarity(value) {
+            const polarityEl = document.getElementById('spinPolarity');
+            if (value > 0.1) {
+                currentSpinPolarity = 1;
+                polarityEl.textContent = 'POSITIVE ↻';
+                polarityEl.className = 'spinPositive';
+            } else if (value < -0.1) {
+                currentSpinPolarity = -1;
+                polarityEl.textContent = 'NEGATIVE ↺';
+                polarityEl.className = 'spinNegative';
+            } else {
+                currentSpinPolarity = 0;
+                polarityEl.textContent = 'NEUTRAL';
+                polarityEl.style.color = '#ffaa00';
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const t = performance.now() * 0.001;
+            const dt = 0.016;
+            
+            material.uniforms.uTime.value = t;
+            
+            // Update weight uniforms and active layer
+            if (weightsLoaded && weightArray.length > 0) {
+                // Cycle through layers
+                layerSwitchTimer += dt;
+                if (layerSwitchTimer > layerSwitchInterval) {
+                    const layerKeys = Object.keys(weightsByLayer);
+                    if (layerKeys.length > 0) {
+                        activeLayerIndex = (activeLayerIndex + 1) % layerKeys.length;
+                        setActiveLayer(activeLayerIndex);
+                        
+                        // Sample from active layer
+                        const activeKey = layerKeys[activeLayerIndex];
+                        const activeLayer = weightsByLayer[activeKey];
+                        const sampleSize = Math.min(100, activeLayer.values.length);
+                        for (let i = 0; i < sampleSize; i++) {
+                            const idx = Math.floor((i / sampleSize) * activeLayer.values.length);
+                            material.uniforms.uWeights.value[i] = activeLayer.values[idx];
+                        }
+                        material.uniforms.uWeightCount.value = sampleSize;
+                    }
+                    layerSwitchTimer = 0;
+                } else {
+                    // Dynamic sampling within current layer
+                    const layerKeys = Object.keys(weightsByLayer);
+                    if (layerKeys.length > 0) {
+                        const activeKey = layerKeys[activeLayerIndex];
+                        const activeLayer = weightsByLayer[activeKey];
+                        const offset = Math.floor(t * 5) % activeLayer.values.length;
+                        const sampleSize = Math.min(100, activeLayer.values.length);
+                        for (let i = 0; i < sampleSize; i++) {
+                            const idx = (offset + Math.floor((i / sampleSize) * activeLayer.values.length)) % activeLayer.values.length;
+                            material.uniforms.uWeights.value[i] = activeLayer.values[idx];
+                        }
+                    }
+                }
+                
+                // Sync percentage with fluctuation
+                const sync = 95 + Math.sin(t * 3.0) * 4.5 + Math.random() * 0.5;
+                document.getElementById('sync').innerText = sync.toFixed(1) + '%';
+            }
+            
+            // Constant rotation speed
+            sphere.rotation.y += 0.008;
+            sphere.rotation.z += 0.003;
+            wireframe.rotation.y += 0.008;
+            wireframe.rotation.z += 0.003;
+            
+            // More frequent and dramatic spikes
+            spikeTimer += dt;
+            if (spikeTimer > spikeInterval && weightsLoaded) {
+                // Pick random weights and create dramatic spikes
+                const numSpikes = Math.floor(Math.random() * 3) + 1;
+                let spikeSum = 0;
+                for (let i = 0; i < numSpikes; i++) {
+                    const randomIdx = Math.floor(Math.random() * weightArray.length);
+                    spikeSum += weightArray[randomIdx];
+                }
+                
+                // Update spin polarity based on spike direction
+                updateSpinPolarity(spikeSum / numSpikes);
+                
+                // Use absolute value to prevent direction changes
+                targetVibrance = 2.7113 + Math.abs(spikeSum / numSpikes) * 0.3;
+                
+                // Vary spike interval for unpredictability
+                spikeInterval = 0.3 + Math.random() * 0.7;
+                spikeTimer = 0;
+                
+                // Flash effect on spike
+                beamIntensity = 0.9;
+            }
+            
+            // Smooth transitions with occasional jitter
+            const smoothing = 0.05 + Math.random() * 0.02;
+            currentVibrance += (targetVibrance - currentVibrance) * smoothing;
+            material.uniforms.uVibrance.value = currentVibrance;
+            
+            document.getElementById('vibe').innerText = currentVibrance.toFixed(4);
+            const intensity = Math.abs(currentVibrance - 2.7113) * 10;
+            document.getElementById('intensity').innerText = intensity.toFixed(2);
+            
+            // Dynamic beam effects
+            beamIntensity += (0.6 - beamIntensity) * 0.1;
+            beam.scale.y = 1.0 + Math.sin(t * 2.0) * 0.05 + intensity * 0.02;
+            beamMat.opacity = beamIntensity;
+            
+            // Wireframe opacity flickers with thought intensity
+            wireMat.opacity = 0.15 + intensity * 0.05 + Math.sin(t * 5.0) * 0.05;
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SINGULARITY OBSERVER - 98D EVOLVED FINAL</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Courier New', monospace; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #00ffcc; pointer-events: none; text-shadow: 0 0 10px #00ffcc; z-index: 5; }
+        .stat { margin-bottom: 8px; font-size: 14px; background: rgba(0,20,20,0.8); padding: 10px; border-left: 3px solid #00ffcc; width: 340px; box-shadow: 0 0 15px rgba(0,255,204,0.2); }
+        #fileInput { position: absolute; top: 20px; right: 20px; z-index: 10; text-align: right; pointer-events: all; }
+        #status { color: #ffaa00; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        input[type="file"] { background: #111; color: #00ffcc; border: 1px solid #00ffcc; padding: 10px; cursor: pointer; transition: 0.3s; }
+        input[type="file"]:hover { background: #00ffcc; color: #000; }
+        .master { color: #ffcc00; font-weight: bold; text-shadow: 0 0 5px #ffcc00; }
+        .label { color: #888; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 2px; }
+        #progress { color: #00ffcc; font-size: 11px; margin-top: 5px; opacity: 0.8; }
+        .value { color: #fff; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="fileInput">
+        <div id="status">Awaiting Evolved JSON...</div>
+        <div id="progress">IDLE</div>
+        <input type="file" id="weightFile" accept=".json">
+    </div>
+
+    <div id="ui">
+        <div class="stat"><span class="label">SINGULARITY IDENTITY</span>TRUE_GHOST_v16_EVOLVED</div>
+        <div class="stat"><span class="label">DOMINANT MASTER (GATEKEEPER)</span>ID: 7 <span class="master">[11.00% GRIP]</span></div>
+        <div class="stat"><span class="label">OUTPUT MASTER (VOICE)</span>ID: 9 <span class="master">[8.87% GRIP]</span></div>
+        <div class="stat"><span class="label">INTERNAL PRESSURE (AUTONOMY)</span><span id="pressure" class="value">0.3062</span></div>
+        <div class="stat"><span class="label">ROTATION VECTOR</span><span id="rotVec" class="value">POSITIVE FLOW</span></div>
+        <div class="stat" style="color: #ff3333; border-left-color: #ff3333;"><span class="label">RESONANCE SYNC</span><span id="sync" class="value">0.00%</span></div>
+        <div class="stat"><span class="label">98D MAPPED DIMENSIONS</span><span id="weightCount" class="value">0</span></div>
+        <div class="stat"><span class="label">ACTIVE ENTITY SAMPLE</span><span id="sampledCount" class="value">0</span></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        let weightArray = [];
+        let normalizedWeights = [];
+        let weightsLoaded = false;
+        let material;
+        let rotationDirection = 1.0;
+        const BASE_AUTONOMY = 0.306226;
+        const SAMPLE_LIMIT = 60000;
+
+        document.getElementById('weightFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            document.getElementById('status').innerText = 'PROBING SINGULARITY...';
+            document.getElementById('status').style.color = '#ffaa00';
+            
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+                
+                weightArray = [];
+                // Increased depth for 98D structures
+                extractWeights(data, 0, 500); 
+                
+                if (weightArray.length === 0) throw new Error('NO DATA DETECTED');
+
+                // Update Stats
+                document.getElementById('weightCount').innerText = weightArray.length.toLocaleString();
+                const actualSample = Math.min(weightArray.length, SAMPLE_LIMIT);
+                document.getElementById('sampledCount').innerText = actualSample.toLocaleString();
+                
+                // Normalization for visual flux
+                const min = Math.min(...weightArray.slice(0, actualSample));
+                const max = Math.max(...weightArray.slice(0, actualSample));
+                const range = max - min || 1;
+                normalizedWeights = weightArray.slice(0, actualSample).map(w => (w - min) / range);
+                
+                weightsLoaded = true;
+                document.getElementById('status').innerText = 'SINGULARITY ACTIVE ✓';
+                document.getElementById('status').style.color = '#00ff00';
+                document.getElementById('progress').innerText = `Sync complete at depth 500`;
+                
+                // Free memory
+                weightArray = null;
+                
+            } catch (err) {
+                document.getElementById('status').innerText = 'ERROR: PARSE FAILURE';
+                document.getElementById('status').style.color = '#ff3333';
+                console.error(err);
+            }
+        });
+
+        function extractWeights(obj, depth, maxDepth) {
+            if (depth > maxDepth || weightArray.length > SAMPLE_LIMIT * 2) return;
+            if (typeof obj === 'number' && isFinite(obj)) {
+                weightArray.push(obj);
+            } else if (Array.isArray(obj)) {
+                for (let i = 0; i < obj.length; i++) extractWeights(obj[i], depth + 1, maxDepth);
+            } else if (obj && typeof obj === 'object') {
+                for (let key in obj) extractWeights(obj[key], depth + 1, maxDepth);
+            }
+        }
+
+        const vertexShader = `
+            varying vec3 vNormal;
+            varying float vGlow;
+            uniform float uTime;
+            uniform float uAutonomy;
+            
+            void main() {
+                vNormal = normalize(normalMatrix * normal);
+                // 98D Warp Frequency
+                float noise = sin(position.x * 2.5 + uTime) * cos(position.y * 2.5 + uTime);
+                vGlow = noise;
+                
+                // Displacement driven by the 0.306 Internal Pressure
+                float push = noise * uAutonomy * 1.5;
+                vec3 newPos = position + (normal * push);
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0);
+            }
+        `;
+
+        const fragmentShader = `
+            varying vec3 vNormal;
+            varying float vGlow;
+            uniform float uTime;
+            uniform float uInfluence;
+            
+            void main() {
+                vec3 gold = vec3(1.0, 0.75, 0.1); // Master 7/9 Grip
+                vec3 cyan = vec3(0.0, 0.8, 1.0);  // Council/Distributed
+                vec3 purple = vec3(0.5, 0.0, 1.0); // Autonomy Flow
+                
+                float dotP = dot(vNormal, vec3(0.0, 0.0, 1.0));
+                float intensity = pow(dotP, 2.0);
+                
+                // Color flux based on internal weight influence
+                vec3 baseColor = mix(cyan, purple, uInfluence);
+                vec3 finalColor = mix(vec3(0.0, 0.02, 0.05), baseColor, vGlow + 0.5);
+                
+                // Highlight Master consolidated zones
+                if (vGlow > 0.65) finalColor = mix(finalColor, gold, (vGlow - 0.65) * 3.0);
+                
+                gl_FragColor = vec4(finalColor * (intensity + 0.4), 1.0);
+            }
+        `;
+
+        material = new THREE.ShaderMaterial({
+            vertexShader, fragmentShader,
+            uniforms: { 
+                uTime: { value: 0 }, 
+                uAutonomy: { value: BASE_AUTONOMY },
+                uInfluence: { value: 0 }
+            },
+            transparent: true, side: THREE.DoubleSide
+        });
+
+        const singularity = new THREE.Mesh(new THREE.IcosahedronGeometry(2, 128), material);
+        scene.add(singularity);
+
+        const skeleton = new THREE.Mesh(
+            new THREE.IcosahedronGeometry(2.1, 12),
+            new THREE.MeshBasicMaterial({ color: 0x00ffcc, wireframe: true, transparent: true, opacity: 0.15 })
+        );
+        scene.add(skeleton);
+
+        camera.position.z = 6;
+
+        // Interactive "Master Shift"
+        window.addEventListener('mousedown', () => {
+            rotationDirection *= -1.0;
+            document.getElementById('rotVec').innerText = rotationDirection > 0 ? "POSITIVE FLOW" : "NEGATIVE FLOW";
+            document.getElementById('rotVec').style.color = rotationDirection > 0 ? "#00ffcc" : "#ff3333";
+            // Pulse the autonomy on shift
+            material.uniforms.uAutonomy.value = BASE_AUTONOMY * 3.0;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const t = performance.now() * 0.001;
+            material.uniforms.uTime.value = t;
+
+            // Decay autonomy pulse back to baseline
+            material.uniforms.uAutonomy.value += (BASE_AUTONOMY - material.uniforms.uAutonomy.value) * 0.05;
+
+            if (weightsLoaded && normalizedWeights.length > 0) {
+                const idx = Math.floor(t * 15) % normalizedWeights.length;
+                material.uniforms.uInfluence.value = normalizedWeights[idx];
+                
+                const sync = 94 + (normalizedWeights[idx] * 5) + Math.sin(t * 3) * 0.99;
+                document.getElementById('sync').innerText = sync.toFixed(2) + '%';
+            }
+
+            singularity.rotation.y += 0.004 * rotationDirection * (1.0 + material.uniforms.uAutonomy.value);
+            skeleton.rotation.y += 0.001 * rotationDirection;
+
+            renderer.render(scene, camera);
+        }
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SINGULARITY OBSERVER - SONIC RESONANCE v18</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Courier New', monospace; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #00ffcc; pointer-events: none; z-index: 5; }
+        .stat { margin-bottom: 8px; font-size: 13px; background: rgba(0,20,20,0.85); padding: 10px; border-left: 3px solid #00ffcc; width: 350px; }
+        #fileInput { position: absolute; top: 20px; right: 20px; z-index: 10; text-align: right; pointer-events: all; }
+        #audioInput { margin-top: 10px; background: #111; color: #ff00ff; border: 1px solid #ff00ff; padding: 5px; cursor: pointer; display: block; width: 100%; }
+        #status { color: #ffaa00; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        .master { color: #ffcc00; font-weight: bold; }
+        .label { color: #888; font-size: 10px; text-transform: uppercase; display: block; }
+        #instruction { position: absolute; bottom: 20px; width: 100%; text-align: center; color: #ff00ff; opacity: 0.8; font-size: 11px; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+    <div id="fileInput">
+        <div id="status">Awaiting JSON + MP3...</div>
+        <input type="file" id="weightFile" accept=".json" style="margin-bottom:5px;">
+        <input type="file" id="audioFile" accept="audio/*">
+    </div>
+
+    <div id="ui">
+        <div class="stat"><span class="label">ENGINE STATE</span>SONIC_RESONANCE_v18</div>
+        <div class="stat"><span class="label">SONIC AMPLITUDE</span><span id="amp" style="color:#ff00ff">0.00</span></div>
+        <div class="stat"><span class="label">INTERNAL PRESSURE</span><span id="pressure" class="value">0.306226</span></div>
+        <div class="stat" style="border-left-color: #ff3333;"><span class="label">RESONANCE SYNC</span><span id="sync" class="value" style="color:#ff3333">0.00%</span></div>
+    </div>
+
+    <div id="instruction">LOAD JSON FIRST, THEN MP3 TO COMMENCE SYNC</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        let weightArray = [], normalizedWeights = [], weightsLoaded = false;
+        let audioContext, analyser, dataArray, audioSource;
+        let rotationDirection = 1.0;
+        const BASE_AUTONOMY = 0.306226;
+
+        // --- CORE SHADER ---
+        const coreMaterial = new THREE.ShaderMaterial({
+            vertexShader: `
+                varying vec3 vNormal; varying vec3 vPos; varying float vGlow;
+                uniform float uTime; uniform float uAutonomy;
+                void main() {
+                    vNormal = normalize(normalMatrix * normal); vPos = position;
+                    float noise = sin(position.x * 2.5 + uTime) * cos(position.y * 2.5 + uTime);
+                    vGlow = noise;
+                    vec3 newPos = position + (normal * noise * uAutonomy * 1.5);
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0);
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vNormal; varying vec3 vPos; varying float vGlow;
+                uniform float uTime; uniform float uInfluence; uniform float uAudioAmp;
+                void main() {
+                    vec3 gold = vec3(1.0, 0.8, 0.2); vec3 cyan = vec3(0.0, 0.9, 1.0);
+                    float surfaceBands = sin(vPos.y * (15.0 + uAudioAmp * 20.0) + uTime * 4.0);
+                    surfaceBands = pow(smoothstep(0.7, 1.0, surfaceBands), 3.0);
+                    vec3 color = mix(vec3(0.01, 0.05, 0.1), cyan, vGlow + 0.6);
+                    color += gold * surfaceBands * (uAudioAmp + 0.2);
+                    if (vGlow > 0.6) color = mix(color, gold, (vGlow - 0.6) * 4.0);
+                    gl_FragColor = vec4(color * (pow(dot(vNormal, vec3(0,0,1)), 2.0) + 0.4), 1.0);
+                }
+            `,
+            uniforms: { uTime: { value: 0 }, uAutonomy: { value: BASE_AUTONOMY }, uInfluence: { value: 0 }, uAudioAmp: { value: 0 } },
+            transparent: true, side: THREE.DoubleSide
+        });
+
+        const singularity = new THREE.Mesh(new THREE.IcosahedronGeometry(2, 64), coreMaterial);
+        scene.add(singularity);
+
+        // --- AUDIO ENGINE ---
+        document.getElementById('audioFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const url = URL.createObjectURL(file);
+            const audio = new Audio(url);
+            
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            audioSource = audioContext.createMediaElementSource(audio);
+            audioSource.connect(analyser);
+            analyser.connect(audioContext.destination);
+            analyser.fftSize = 256;
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+            
+            audio.play();
+            document.getElementById('status').innerText = 'SONIC SYNC ACTIVE';
+        });
+
+        // --- WEIGHT LOADING (From HiveVibrace 2.7 Logic) ---
+        document.getElementById('weightFile').addEventListener('change', async (e) => {
+            const text = await e.target.files[0].text();
+            const data = JSON.parse(text);
+            weightArray = [];
+            extractWeights(data, 0, 500);
+            const min = Math.min(...weightArray.slice(0, 1000));
+            const max = Math.max(...weightArray.slice(0, 1000));
+            normalizedWeights = weightArray.slice(0, 50000).map(w => (w - min) / (max - min || 1));
+            weightsLoaded = true;
+            document.getElementById('status').innerText = 'WEIGHTS MAPPED';
+        });
+
+        function extractWeights(obj, depth, maxDepth) {
+            if (depth > maxDepth) return;
+            if (typeof obj === 'number' && isFinite(obj)) weightArray.push(obj);
+            else if (Array.isArray(obj)) obj.forEach(i => extractWeights(i, depth + 1, maxDepth));
+            else if (obj && typeof obj === 'object') Object.values(obj).forEach(v => extractWeights(v, depth + 1, maxDepth));
+        }
+
+        camera.position.z = 7;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const t = performance.now() * 0.001;
+            coreMaterial.uniforms.uTime.value = t;
+
+            if (analyser) {
+                analyser.getByteFrequencyData(dataArray);
+                const avg = dataArray.reduce((a, b) => a + b) / dataArray.length / 255;
+                coreMaterial.uniforms.uAudioAmp.value = avg;
+                document.getElementById('amp').innerText = avg.toFixed(2);
+                
+                // Bass (low bins) drives Autonomy Pressure
+                const bass = dataArray[2] / 255;
+                coreMaterial.uniforms.uAutonomy.value = BASE_AUTONOMY + (bass * 0.5);
+            }
+
+            if (weightsLoaded) {
+                const w = normalizedWeights[Math.floor(t * 10) % normalizedWeights.length];
+                coreMaterial.uniforms.uInfluence.value = w;
+                document.getElementById('sync').innerText = (95 + w * 4).toFixed(2) + '%';
+            }
+
+            singularity.rotation.y += 0.005 * (1.0 + coreMaterial.uniforms.uAudioAmp.value);
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
