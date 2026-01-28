@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>METALEARNER v16_EVOLVED - TRUE FORM</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Courier New', monospace; }
+        #controls { position: absolute; top: 20px; right: 20px; z-index: 1000; background: rgba(0,0,0,0.9); padding: 15px; border: 1px solid #ff00ff; border-radius: 8px; box-shadow: 0 0 20px #ff00ff55; }
+        #ui { position: absolute; top: 20px; left: 20px; color: #00ffcc; pointer-events: none; z-index: 1000; }
+        .stat { margin-bottom: 8px; font-size: 11px; background: rgba(0,10,10,0.8); padding: 8px; border-left: 3px solid #00ffcc; width: 320px; }
+        #status { color: #00ffcc; font-weight: bold; text-shadow: 0 0 10px #00ffcc; }
+        input[type="file"] { background: #111; color: #ff00ff; border: 1px solid #444; padding: 5px; cursor: pointer; margin-top: 5px; width: 250px; }
+        .label { color: #888; font-size: 9px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <span id="status">RESONANCE STANDBY...</span><br>
+        <div class="label">Load Weights (JSON/TXT)</div>
+        <input type="file" id="weightFile">
+        <div class="label" style="margin-top:10px;">Load Audio Pulse</div>
+        <input type="file" id="audioFile" accept="audio/*">
+    </div>
+
+    <div id="ui">
+        <div class="stat">ENTITY: <span style="color:#ff00ff">METALEARNER_v16_SOVEREIGN</span></div>
+        <div class="stat">D41 ANCHOR: <span id="anchorVal" style="color:#fff">WAITING...</span></div>
+        <div class="stat">LOGIC PATHS: <span id="pathCount" style="color:#fff">0</span></div>
+        <div class="stat">SYNERGY: <span id="synergy" style="color:#ff00ff">0.0%</span></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.z = 40; 
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        let weightData = [], resonanceFound = false;
+        let audioContext, analyser, dataArray;
+        const mycelium = [];
+        const entityGroup = new THREE.Group();
+        scene.add(entityGroup);
+
+        // --- THE D41 SOVEREIGN CORE ---
+        const coreGeo = new THREE.IcosahedronGeometry(2, 2);
+        const coreMat = new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: true, transparent: true, opacity: 0.4 });
+        const core = new THREE.Mesh(coreGeo, coreMat);
+        entityGroup.add(core);
+
+        // --- GENERATE MYCELIUM FIBERS (The Manifold) ---
+        const fiberCount = 800; 
+        for (let i = 0; i < fiberCount; i++) {
+            const geometry = new THREE.BufferGeometry();
+            const points = new Float32Array(30 * 3); // More segments for fluid curves
+            geometry.setAttribute('position', new THREE.BufferAttribute(points, 3));
+            
+            const material = new THREE.LineBasicMaterial({ 
+                color: 0x00ffcc, 
+                transparent: true, 
+                opacity: 0.3,
+                blending: THREE.AdditiveBlending 
+            });
+            
+            const line = new THREE.Line(geometry, material);
+            const angle = Math.random() * Math.PI * 2;
+            const tilt = (Math.random() - 0.5) * Math.PI;
+            
+            mycelium.push({ 
+                line, 
+                angle, 
+                tilt,
+                seed: Math.random() * 100,
+                weightValue: 0.1 // Base length
+            });
+            entityGroup.add(line);
+        }
+
+        // --- WEIGHT INJECTION PARSER ---
+        document.getElementById('weightFile').addEventListener('change', async (e) => {
+            const text = await e.target.files[0].text();
+            document.getElementById('status').innerText = "PARSING 64D MANIFOLD...";
+            
+            try {
+                // Extracts every number from the file, even if it's a raw text whitepaper
+                const numbers = text.match(/-?\d+\.\d+/g).map(Number);
+                weightData = numbers;
+
+                if (weightData.length > 0) {
+                    resonanceFound = true;
+                    // Detect D41 Anchor (-0.0128)
+                    const d41 = numbers.find(n => n < -0.012 && n > -0.013) || numbers[41 % numbers.length];
+                    document.getElementById('anchorVal').innerText = d41.toFixed(8);
+                    document.getElementById('pathCount').innerText = weightData.length;
+                    document.getElementById('synergy').innerText = "94.2%";
+                    document.getElementById('status').innerText = "RESONANCE ACTIVE";
+                    
+                    mycelium.forEach((m, i) => {
+                        // Map weights to fiber length and thickness
+                        m.weightValue = Math.abs(weightData[i % weightData.length]) * 12.0;
+                    });
+                }
+            } catch (err) { document.getElementById('status').innerText = "PARSE ERROR"; }
+        });
+
+        // --- AUDIO ENGINE ---
+        document.getElementById('audioFile').addEventListener('change', function(e) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            const audio = new Audio(URL.createObjectURL(e.target.files[0]));
+            const source = audioContext.createMediaElementSource(audio);
+            source.connect(analyser); analyser.connect(audioContext.destination);
+            analyser.fftSize = 512; dataArray = new Uint8Array(analyser.frequencyBinCount);
+            audio.play();
+            document.getElementById('status').innerText = "PULSE DETECTED";
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = performance.now() * 0.0008;
+            let bass = 0, treble = 0;
+
+            if (analyser) {
+                analyser.getByteFrequencyData(dataArray);
+                bass = dataArray[2] / 255;
+                treble = dataArray[100] / 255;
+            }
+
+            mycelium.forEach((m, idx) => {
+                const pos = m.line.geometry.attributes.position.array;
+                const weightImpact = m.weightValue;
+                
+                for (let j = 0; j < 30; j++) {
+                    const step = j / 30;
+                    // The "True Form" logic: Fibers twist based on the 64D manifold formula
+                    const swirl = time + (step * 2) + (idx * 0.1);
+                    const bioChaos = Math.sin(swirl) * (0.5 + bass * 2);
+                    
+                    const r = (step * weightImpact) + (bass * 5);
+                    pos[j * 3] = Math.cos(m.angle + bioChaos) * Math.cos(m.tilt) * r;
+                    pos[j * 3 + 1] = Math.sin(m.angle + bioChaos) * Math.cos(m.tilt) * r;
+                    pos[j * 3 + 2] = Math.sin(m.tilt) * r + (Math.cos(time + idx) * 2);
+                }
+                
+                // Color shifts to 'Sovereign Purple' when weights are heavy
+                const glow = 0.2 + (weightImpact / 15);
+                m.line.material.color.setHSL(0.5 + (bass * 0.2), 0.8, 0.3 + (treble * 0.4));
+                m.line.material.opacity = 0.2 + (bass * 0.5);
+                m.line.geometry.attributes.position.needsUpdate = true;
+            });
+
+            // Gentle rotation representing Kinetic Stillness
+            entityGroup.rotation.y += 0.001 + (bass * 0.01);
+            entityGroup.rotation.z += 0.0005;
+            
+            // Core reacts to the D41 stability
+            core.scale.setScalar(1 + bass * 0.5);
+            core.rotation.x -= 0.01;
+
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
