@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SOVEREIGN v35 - ASTRAL GARDEN</title>
+    <style>
+        body { margin: 0; background: #000505; overflow: hidden; font-family: 'Courier New', monospace; color: #00ffcc; }
+        .ui { position: absolute; z-index: 10; background: rgba(0,20,20,0.8); border: 1px solid #00ffcc; padding: 15px; border-radius: 8px; }
+        #top-ui { top: 20px; left: 20px; width: 280px; }
+        #happy-meter { bottom: 20px; right: 20px; width: 320px; text-align: center; border: 1px solid #ff00ff; }
+        .meter-bar { background: #111; height: 12px; width: 100%; margin: 10px 0; border-radius: 6px; overflow: hidden; }
+        #inner-bar { height: 100%; width: 50%; background: linear-gradient(90deg, #ff00ff, #00ffcc); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn { background: #003333; color: #00ffcc; border: 1px solid #00ffcc; padding: 10px; cursor: pointer; display: block; margin: 8px 0; text-align: center; font-size: 10px; letter-spacing: 1px; }
+        .btn:hover { background: #00ffcc; color: #000; }
+        input[type="file"] { display: none; }
+    </style>
+</head>
+<body>
+    <div id="top-ui" class="ui">
+        <div style="font-weight: bold; color: #ff00ff;">ASTRAL GARDEN v35</div>
+        <label class="btn" for="weightInput">LOAD ROOTS (.JSON)</label>
+        <input type="file" id="weightInput">
+        <label class="btn" for="audioInput">FEED LIGHT (AUDIO)</label>
+        <input type="file" id="audioInput" accept="audio/*">
+        <div id="status" style="font-size: 9px; margin-top: 5px; color: #888;">GARDEN IS DORMANT...</div>
+    </div>
+
+    <div id="happy-meter" class="ui">
+        <div style="font-size: 11px; text-transform: uppercase;">Harmony Level</div>
+        <div class="meter-bar"><div id="inner-bar"></div></div>
+        <div id="rating" style="font-size: 24px; font-weight: bold; color: #fff;">0%</div>
+        <div style="font-size: 9px; opacity: 0.6;">SOVEREIGN COHERENCE RATING</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        
+        // Fog makes it feel like a deep garden
+        scene.fog = new THREE.FogExp2(0x000505, 0.03);
+        camera.position.set(0, 5, 15);
+        camera.lookAt(0, 2, 0);
+
+        const gardenGroup = new THREE.Group();
+        scene.add(gardenGroup);
+
+        // --- THE FLOWER LOGIC ---
+        const flowers = [];
+        const flowerCount = 40; // Representing nodes + specialists
+
+        function createFlower(x, z, color) {
+            const group = new THREE.Group();
+            
+            // Stem
+            const stemGeo = new THREE.CylinderGeometry(0.05, 0.1, 4, 8);
+            const stemMat = new THREE.MeshBasicMaterial({ color: 0x004422 });
+            const stem = new THREE.Mesh(stemGeo, stemMat);
+            stem.position.y = 2;
+            group.add(stem);
+
+            // Bloom (The "Head" is audio-reactive)
+            const bloomGeo = new THREE.IcosahedronGeometry(0.6, 2);
+            const bloomMat = new THREE.MeshStandardMaterial({ 
+                color: color, 
+                wireframe: true, 
+                emissive: color, 
+                emissiveIntensity: 1 
+            });
+            const bloom = new THREE.Mesh(bloomGeo, bloomMat);
+            bloom.position.y = 4;
+            group.add(bloom);
+
+            group.position.set(x, 0, z);
+            gardenGroup.add(group);
+            return { group, bloom, stem, baseScale: 1 };
+        }
+
+        // Planting the Garden
+        for(let i=0; i<flowerCount; i++) {
+            const x = (Math.random() - 0.5) * 20;
+            const z = (Math.random() - 0.5) * 20;
+            const col = new THREE.Color().setHSL(Math.random() * 0.3 + 0.5, 1, 0.5); // Purples/Blues
+            flowers.push(createFlower(x, z, col));
+        }
+
+        scene.add(new THREE.AmbientLight(0x404040));
+        const pointLight = new THREE.PointLight(0xff00ff, 2, 20);
+        pointLight.position.set(0, 10, 0);
+        scene.add(pointLight);
+
+        // --- Audio & Interaction ---
+        let analyser, dataArray, audioCtx;
+        let happiness = 50;
+
+        document.getElementById('audioInput').onchange = (e) => {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const buffer = await audioCtx.decodeAudioData(ev.target.result);
+                const source = audioCtx.createBufferSource();
+                source.buffer = buffer;
+                analyser = audioCtx.createAnalyser();
+                source.connect(analyser);
+                analyser.connect(audioCtx.destination);
+                source.start(0);
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                document.getElementById('status').innerText = "GARDEN BLOOMING...";
+            };
+            reader.readAsArrayBuffer(e.target.files[0]);
+        };
+
+        function animate(time) {
+            requestAnimationFrame(animate);
+            const t = time * 0.001;
+
+            if(analyser) {
+                analyser.getByteFrequencyData(dataArray);
+                const lowFreq = dataArray[2] / 255; // Bass
+                const midFreq = dataArray[10] / 255; // Mids
+                
+                // Happiness logic: Bass = Strength, Mids = Calm
+                happiness = Math.max(10, (lowFreq * 60) + (midFreq * 40));
+                document.getElementById('inner-bar').style.width = happiness + "%";
+                document.getElementById('rating').innerText = Math.round(happiness) + "%";
+                
+                flowers.forEach((f, i) => {
+                    const audioSense = dataArray[i % 128] / 255;
+                    // Swaying in the "wind"
+                    f.group.rotation.z = Math.sin(t + i) * 0.1 * (1 + audioSense);
+                    f.group.rotation.x = Math.cos(t * 0.5 + i) * 0.05;
+                    
+                    // Blooming reaction
+                    const scale = 0.5 + (audioSense * (happiness / 50));
+                    f.bloom.scale.set(scale, scale, scale);
+                    f.bloom.material.emissiveIntensity = audioSense * 3;
+                    
+                    // If very happy, change color to bright gold
+                    if(happiness > 85) f.bloom.material.color.setHex(0xffff00);
+                    else f.bloom.material.color.setHSL(0.7, 1, 0.5);
+                });
+            }
+
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>

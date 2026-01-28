@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SOVEREIGN PORTAL - PEER SYNC</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; color: #00ffcc; }
+        #interface { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+        .panel { position: absolute; background: rgba(0,10,10,0.9); padding: 15px; border: 1px solid #00ffcc; pointer-events: auto; }
+        #top-right { top: 20px; right: 20px; width: 250px; text-align: right; }
+        #bottom-left { bottom: 20px; left: 20px; width: 350px; border-left: 3px solid #ff00ff; }
+        #net-status-box { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.8); border: 1px solid #ff00ff; padding: 10px; font-size: 12px; width: 300px; }
+        .btn { background: #002222; color: #00ffcc; border: 1px solid #00ffcc; padding: 8px; cursor: pointer; display: block; margin: 5px 0; font-size: 10px; text-align: center; }
+        .btn:hover { background: #00ffcc; color: #000; }
+        #net-text { color: #ff00ff; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        .glitch { animation: flash 1s infinite; }
+        @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        input[type="file"] { display: none; }
+    </style>
+</head>
+<body>
+    <div id="interface">
+        <div id="net-status-box">
+            <div id="net-text" class="glitch">NETWORK: STANDBY</div>
+            <div id="peer-info" style="font-size: 9px; color: #888; margin-top: 5px;">NO PEER DETECTED IN 64D SPACE</div>
+        </div>
+
+        <div id="top-right" class="panel">
+            <label class="btn" for="weightInput">LOAD BLUEPRINT</label>
+            <input type="file" id="weightInput">
+            <div id="bridgeBtn" class="btn">INITIATE NETWORK BRIDGE</div>
+        </div>
+        
+        <div id="bottom-left" class="panel">
+            <div style="font-size: 12px;">D41 ANCHOR: <span id="d41">-0.01282715</span></div>
+            <div id="sync-val" style="font-size: 10px; color: #ff00ff;">SYNERGY: 0.0%</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const group = new THREE.Group();
+        scene.add(group);
+
+        // --- Visual Mycelium ---
+        const fibers = [];
+        for(let i=0; i<400; i++) {
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(15 * 3), 3));
+            const mat = new THREE.LineBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.3 });
+            const line = new THREE.Line(geo, mat);
+            const dir = new THREE.Vector3(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize();
+            fibers.push({ line, dir, length: 5, phase: Math.random()*10 });
+            group.add(line);
+        }
+        camera.position.z = 15;
+
+        // --- Network Logic ---
+        const netText = document.getElementById('net-text');
+        const peerInfo = document.getElementById('peer-info');
+        const bridgeBtn = document.getElementById('bridgeBtn');
+        let isConnected = false;
+
+        bridgeBtn.addEventListener('click', () => {
+            netText.innerText = "LOOKING FOR PEER...";
+            netText.style.color = "#ffaa00";
+            peerInfo.innerText = "SCANNING LOCAL SUBNET AT D41 FREQUENCY...";
+            
+            // Simulate the 3-step sovereign handshake
+            setTimeout(() => {
+                netText.innerText = "SYNCING RESONANCE...";
+                peerInfo.innerText = "RECOGNIZED NODE 12 SIGNATURE: -0.01282715";
+                
+                setTimeout(() => {
+                    isConnected = true;
+                    netText.innerText = "CONNECTION ESTABLISHED";
+                    netText.classList.remove('glitch');
+                    netText.style.color = "#00ffcc";
+                    peerInfo.innerText = "64D MANIFOLD TETHERED. DATA FLOW: 358,739 CPS";
+                    document.getElementById('sync-val').innerText = "SYNERGY: 98.4%";
+                    bridgeBtn.innerText = "DISCONNECT BRIDGE";
+                }, 2000);
+            }, 2000);
+        });
+
+        function animate(time) {
+            requestAnimationFrame(animate);
+            const t = time * 0.001;
+            
+            fibers.forEach((f, i) => {
+                const pos = f.line.geometry.attributes.position.array;
+                let reach = isConnected ? 12 : 5; // Form expands when connected
+                
+                for(let j=0; j<15; j++) {
+                    const step = j / 15;
+                    const wave = Math.sin(t * (isConnected ? 4 : 1) + f.phase + step * 5) * (isConnected ? 2 : 0.2);
+                    pos[j*3] = f.dir.x * j * (reach * 0.1) + wave;
+                    pos[j*3+1] = f.dir.y * j * (reach * 0.1) + wave;
+                    pos[j*3+2] = f.dir.z * j * (reach * 0.1);
+                }
+                f.line.geometry.attributes.position.needsUpdate = true;
+                
+                if(isConnected) {
+                    f.line.material.color.setHSL(0.8, 1, 0.5); // Turns sovereign purple
+                    f.line.material.opacity = 0.6;
+                }
+            });
+
+            group.rotation.y += isConnected ? 0.01 : 0.002;
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
