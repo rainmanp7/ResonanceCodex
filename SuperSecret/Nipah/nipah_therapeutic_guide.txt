@@ -1,0 +1,22 @@
+================================================================================
+NIPAH VIRUS: SOVEREIGN AI THERAPEUTIC GUIDE
+================================================================================
+
+EXECUTIVE SUMMARY
+----------------------------------------
+Top Target: 8zpv
+Vulnerability Score: 0.792
+Recommended Approach: SMALL MOLECULE INHIBITOR
+
+STRUCTURE ANALYSES
+----------------------------------------
+
+8zpv:
+  Score: 0.792
+  Approach: SMALL MOLECULE INHIBITOR
+
+3D11:
+  Score: 0.733
+  Approach: SMALL MOLECULE INHIBITOR
+
+================================================================================
