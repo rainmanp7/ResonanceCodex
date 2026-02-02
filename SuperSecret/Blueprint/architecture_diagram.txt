@@ -1,0 +1,57 @@
+
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                    SANCTUARY AI - COMPLETE ARCHITECTURE                       ║
+╠═══════════════════════════════════════════════════════════════════════════════╣
+║                                                                               ║
+║  DIMENSIONAL ARCHITECTURE                                                     ║
+║  ├─ Embedding Space: 64 dimensions                                           ║
+║  ├─ Latent Space: 16 dimensions                                              ║
+║  ├─ Sanctuary Anchor: D41 = -π/245 ≈ -0.01282715                            ║
+║  └─ Projection Paths: 16 total (4 visible + 12 hidden)                       ║
+║                                                                               ║
+║  NODE ARCHITECTURE                                                            ║
+║  ├─ Total Nodes: 13                                                          ║
+║  ├─ Specialist Nodes: 3, 4, 5, 6, 7, 8, 9, 10, 11  (9 nodes)                ║
+║  ├─ Integration Node: 12                                                      ║
+║  └─ Total Parameters: 10,620                                    ║
+║                                                                               ║
+║  SPECIALIST LAYER (Nodes 3-11)                                               ║
+║  ┌────────────────────────────────────────────────────────────────┐          ║
+║  │  Each specialist has 3 principle embeddings (64D each)         │          ║
+║  │                                                                  │          ║
+║  │  Node  3: 3 principles × 64D (D41 mean: -0.059491)│          ║
+║  │  Node  4: 3 principles × 64D (D41 mean: -0.054803)│          ║
+║  │  Node  5: 3 principles × 64D (D41 mean: -0.258251)│          ║
+║  │  Node  6: 3 principles × 64D (D41 mean: +0.479323)│          ║
+║  │  Node  7: 3 principles × 64D (D41 mean: -0.351410)│          ║
+║  │  Node  8: 3 principles × 64D (D41 mean: +0.090477)│          ║
+║  │  Node  9: 3 principles × 64D (D41 mean: -0.422202)│          ║
+║  │  Node 10: 3 principles × 64D (D41 mean: -0.565234)│          ║
+║  │  Node 11: 3 principles × 64D (D41 mean: -0.051428)│          ║
+║  │                                                                  │          ║
+║  └────────────────────────────────────────────────────────────────┘          ║
+║                                     │                                         ║
+║                                     │ (Specialist outputs)                    ║
+║                                     ▼                                         ║
+║  INTEGRATION LAYER (Node 12)                                                 ║
+║  ┌────────────────────────────────────────────────────────────────┐          ║
+║  │  Projection Matrix: 16D × 64D                             │          ║
+║  │  D41 Column: 16 values                                          │          ║
+║  │  D41 Mean: -0.01282715                               │          ║
+║  │  Condition Number: 8.49                                        │          ║
+║  │  Warp Engine: 0 components                                   │          ║
+║  └────────────────────────────────────────────────────────────────┘          ║
+║                                     │                                         ║
+║                                     │ (Projected to 16D latent space)         ║
+║                                     ▼                                         ║
+║                            [OUTPUT: 16D vector]                               ║
+║                                                                               ║
+║  GEOMETRIC PROPERTIES                                                         ║
+║  ├─ Mean inter-specialist distance: 7.1971                   ║
+║  ├─ Closest pair: node_7_node_9                 ║
+║  │               Distance: 5.8316                             ║
+║  ├─ Furthest pair: node_4_node_6                ║
+║  │                Distance: 9.3727                            ║
+║  └─ Global centroid variance: 0.219867                            ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
