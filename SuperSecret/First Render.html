@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sovereign Oracle - 3D Dimensional Visualizer</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        body { 
+            background-color: #0d1117; 
+            color: #c9d1d9; 
+            font-family: monospace; 
+            text-align: center; 
+        }
+        #upload-container { 
+            margin: 20px; 
+            padding: 15px;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        #plotDiv { 
+            width: 95vw; 
+            height: 80vh; 
+            margin: 0 auto; 
+        }
+        input[type="file"] { 
+            background: #21262d; 
+            color: #c9d1d9; 
+            padding: 10px; 
+            border: 1px solid #30363d; 
+            border-radius: 5px; 
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Sovereign Oracle: Dimension 3 Spatial Manifold</h2>
+    
+    <div id="upload-container">
+        <label for="jsonUpload" style="margin-right: 15px; font-size: 1.1em;">Load Master Ledger (JSON): </label>
+        <input type="file" id="jsonUpload" accept=".json">
+    </div>
+
+    <div id="plotDiv"></div>
+
+    <script>
+        // Listen for the user to select the master JSON file
+        document.getElementById('jsonUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const database = JSON.parse(e.target.result);
+                    plotDimensionalData(database);
+                } catch (error) {
+                    alert("[-] Error parsing JSON matrix: " + error);
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        function plotDimensionalData(database) {
+            let x_vals = [];
+            let y_vals = [];
+            let z_vals = [];
+            let hover_text = [];
+
+            // Extract the 3D anchor vector for every element in the matrix
+            for (const [z_key, dims] of Object.entries(database)) {
+                if (dims["Dimension_3"]) {
+                    const target = dims["Dimension_3"];
+                    const vec = target.properties.raw_vector;
+                    
+                    // Coordinates 0, 1, and 2 dictate X, Y, and Z spatial geometry
+                    x_vals.push(vec[0]);
+                    y_vals.push(vec[1]);
+                    z_vals.push(vec[2]);
+                    
+                    // Build the hover display for cross-referencing
+                    hover_text.push(
+                        "<b>" + target.symbol + "</b><br>" +
+                        "Origin: " + z_key + "<br>" +
+                        "Valency: " + target.properties.valency_bonds + " bonds<br>" +
+                        "State: " + target.properties.predicted_state
+                    );
+                }
+            }
+
+            // Define the 3D scatter plot parameters
+            const trace = {
+                x: x_vals, 
+                y: y_vals, 
+                z: z_vals,
+                mode: 'markers',
+                marker: {
+                    size: 7,
+                    color: z_vals, // Color gradient based on the Z-axis depth
+                    colorscale: 'Cybermode', 
+                    opacity: 0.85,
+                    line: { color: '#ffffff', width: 0.5 }
+                },
+                text: hover_text,
+                hoverinfo: 'text',
+                type: 'scatter3d'
+            };
+
+            const layout = {
+                paper_bgcolor: '#0d1117',
+                plot_bgcolor: '#0d1117',
+                font: { color: '#c9d1d9', family: 'monospace' },
+                margin: { l: 0, r: 0, b: 0, t: 30 },
+                scene: {
+                    xaxis: { title: 'Vector X (v0)', backgroundcolor: '#161b22', gridcolor: '#30363d', showbackground: true },
+                    yaxis: { title: 'Vector Y (v1)', backgroundcolor: '#161b22', gridcolor: '#30363d', showbackground: true },
+                    zaxis: { title: 'Vector Z (v2)', backgroundcolor: '#161b22', gridcolor: '#30363d', showbackground: true }
+                }
+            };
+
+            // Execute the render
+            Plotly.newPlot('plotDiv', [trace], layout);
+            console.log("[+] 3D Matrix Render Complete.");
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sovereign Oracle - Dimensional Shift Map</title>
+    <style>
+        body {
+            background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif;
+            margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center;
+        }
+        h2 { margin-bottom: 5px; }
+        p.subtitle { color: #8b949e; margin-top: 0; margin-bottom: 25px; }
+        
+        #controls {
+            margin-bottom: 30px; padding: 15px; background-color: #161b22; 
+            border: 1px solid #30363d; border-radius: 8px; display: flex; gap: 15px; align-items: center;
+        }
+        input[type="file"], select {
+            background: #21262d; color: #c9d1d9; padding: 8px; 
+            border: 1px solid #30363d; border-radius: 5px; cursor: pointer; font-size: 1rem;
+        }
+        
+        #ptable {
+            display: grid; grid-template-columns: repeat(18, 65px); grid-template-rows: repeat(9, 70px);
+            gap: 4px; justify-content: center; margin-bottom: 20px;
+        }
+        
+        .element {
+            background-color: #21262d; border: 1px solid #30363d; border-radius: 4px; padding: 4px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            cursor: pointer; transition: transform 0.1s, border-color 0.1s; position: relative;
+        }
+        .element:hover {
+            transform: scale(1.15); z-index: 10; border-color: #ffffff; box-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        
+        .z-num { font-size: 0.65rem; color: #8b949e; font-weight: bold; }
+        .symbol { font-size: 1.3rem; font-weight: bold; text-align: center; color: #ffffff; }
+        .mass { font-size: 0.55rem; text-align: center; color: #8b949e; }
+        
+        .state-baryonic { border-bottom: 3px solid #8b949e; } 
+        .state-hd { border-bottom: 3px solid #58a6ff; }       
+        .state-hyper { border-bottom: 3px solid #ab7df8; }    
+        .state-lasagne { border-bottom: 3px solid #f85149; }  
+
+        #info-panel {
+            min-height: 80px; width: 100%; max-width: 800px; background: #161b22; 
+            border: 1px solid #30363d; border-radius: 8px; padding: 15px; text-align: center; font-size: 1.1rem;
+        }
+        .legend { display: flex; gap: 15px; margin-bottom: 20px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <h2>Sovereign Oracle: Dimensional Shift Map</h2>
+    <p class="subtitle">Toggle dimensions to witness structural phase-shifts in real-time.</p>
+    
+    <div id="controls">
+        <label for="jsonUpload">Load Ledger:</label>
+        <input type="file" id="jsonUpload" accept=".json">
+        
+        <label for="dimSelect" style="margin-left: 20px;">Target Geometry:</label>
+        <select id="dimSelect">
+            <option value="Dimension_3">3rd Dimension (Base Reality)</option>
+            <option value="Dimension_4">4th Dimension</option>
+            <option value="Dimension_5">5th Dimension</option>
+            <option value="Dimension_6">6th Dimension</option>
+            <option value="Dimension_7">7th Dimension</option>
+            <option value="Dimension_8">8th Dimension</option>
+            <option value="Dimension_9">9th Dimension</option>
+            <option value="Dimension_10">10th Dimension</option>
+        </select>
+    </div>
+
+    <div class="legend">
+        <span class="state-baryonic">Standard Baryonic</span>
+        <span class="state-hd">hd-Crystalline (Diamond-plus)</span>
+        <span class="state-hyper">Hypernuclear Lattice</span>
+        <span class="state-lasagne">Neutron-Dense</span>
+    </div>
+
+    <div id="ptable"></div>
+    <div id="info-panel">Upload the 64D Prep JSON to begin.</div>
+
+    <script>
+        let globalDatabase = null;
+
+        document.getElementById('jsonUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    globalDatabase = JSON.parse(e.target.result);
+                    renderPeriodicTable();
+                } catch (error) { alert("[-] Error parsing JSON: " + error); }
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('dimSelect').addEventListener('change', renderPeriodicTable);
+
+        function getGridPosition(z) {
+            if (z === 1) return {r: 1, c: 1};
+            if (z === 2) return {r: 1, c: 18};
+            if (z >= 3 && z <= 4) return {r: 2, c: z - 2};
+            if (z >= 5 && z <= 10) return {r: 2, c: z + 8};
+            if (z >= 11 && z <= 12) return {r: 3, c: z - 10};
+            if (z >= 13 && z <= 18) return {r: 3, c: z};
+            if (z >= 19 && z <= 36) return {r: 4, c: z - 18};
+            if (z >= 37 && z <= 54) return {r: 5, c: z - 36};
+            if (z >= 55 && z <= 56) return {r: 6, c: z - 54};
+            if (z >= 57 && z <= 71) return {r: 8, c: z - 57 + 4}; 
+            if (z >= 72 && z <= 86) return {r: 6, c: z - 72 + 4};
+            if (z >= 87 && z <= 88) return {r: 7, c: z - 86};
+            if (z >= 89 && z <= 103) return {r: 9, c: z - 89 + 4}; 
+            if (z >= 104 && z <= 118) return {r: 7, c: z - 104 + 4};
+            return {r: 10, c: 1};
+        }
+
+        function renderPeriodicTable() {
+            if (!globalDatabase) return;
+            
+            const targetDim = document.getElementById('dimSelect').value;
+            const container = document.getElementById('ptable');
+            container.innerHTML = ''; 
+            document.getElementById('info-panel').innerHTML = `Displaying architecture for <strong>${targetDim.replace('_', ' ')}</strong>. Hover over elements for details.`;
+
+            for (let z = 1; z <= 118; z++) {
+                const zKey = "Base_Z_" + z;
+                
+                if (globalDatabase[zKey] && globalDatabase[zKey][targetDim]) {
+                    const data = globalDatabase[zKey][targetDim];
+                    const props = data.properties;
+                    const pos = getGridPosition(z);
+
+                    let stateClass = "state-baryonic";
+                    if (props.predicted_state.includes("hd-Crystalline")) stateClass = "state-hd";
+                    if (props.predicted_state.includes("Hypernuclear")) stateClass = "state-hyper";
+                    if (props.predicted_state.includes("Neutron-Dense")) stateClass = "state-lasagne";
+
+                    const cell = document.createElement('div');
+                    cell.className = `element ${stateClass}`;
+                    cell.style.gridRow = pos.r;
+                    cell.style.gridColumn = pos.c;
+
+                    cell.innerHTML = `
+                        <div class="z-num">${z}</div>
+                        <div class="symbol">${data.symbol}</div>
+                        <div class="mass">${Math.round(props.mass_amu_d)}</div>
+                    `;
+
+                    cell.addEventListener('mouseenter', () => {
+                        document.getElementById('info-panel').innerHTML = `
+                            <strong style="font-size:1.3rem; color:#fff;">${data.symbol} (Base Z=${z})</strong><br><br>
+                            Dimensional Mass: <span style="color:#58a6ff;">${props.mass_amu_d} amu_d</span> | 
+                            Geometric Valency: <span style="color:#58a6ff;">${props.valency_bonds} bonds</span><br>
+                            Quantum Affinity: ${props.quantum_affinity} Q-scale<br>
+                            State: <strong>${props.predicted_state}</strong>
+                        `;
+                    });
+
+                    container.appendChild(cell);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
